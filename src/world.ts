@@ -18,8 +18,9 @@ export class World extends Emitter<{
     return this.entityIds.values()
   }
 
-  hasEntityId(entity: number): boolean {
-    return this.entityIds.has(entity)
+  hasEntityId(entityId: number): boolean {
+    return entityId < this.nextEntityId
+        && this.entityIds.has(entityId)
   }
 
   /**
