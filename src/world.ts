@@ -1,8 +1,8 @@
-import { go, assert, NonEmptyArray } from '@blackglory/prelude'
+import { go, assert, NonEmptyArray, isUndefined } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
-import { toArray } from 'iterable-operator'
+import { toArray, first } from 'iterable-operator'
 
 /**
  * 世界的本质是一个内存数据库管理系统.
@@ -10,31 +10,39 @@ import { toArray } from 'iterable-operator'
 export class World extends Emitter<{
   entityComponentsChanged: [entityId: number, components: Array<StructureOfArrays<any>>]
 }> {
-  private entityIds = new Set<number>()
   private nextEntityId: number = 0
+  private deletedEntityIds = new Set<number>()
   private entityIdToComponentSet: Map<number, Set<StructureOfArrays<any>>> = new Map()
 
-  getAllEntityIds(): Iterable<number> {
-    return this.entityIds.values()
+  ;* getAllEntityIds(): Iterable<number> {
+    for (let entityId = 0; entityId < this.nextEntityId; entityId++) {
+      if (!this.deletedEntityIds.has(entityId)) {
+        yield entityId
+      }
+    }
   }
 
   hasEntityId(entityId: number): boolean {
     return entityId < this.nextEntityId
-        && this.entityIds.has(entityId)
+        && !this.deletedEntityIds.has(entityId)
   }
 
   /**
-   * entityId是entity的主键, 不会重用.
+   * entityId是entity的主键, 与数据库主键不同, 该键可以被重用.
    */
   createEntityId(): number {
-    const entityId = this.nextEntityId++
-    this.entityIds.add(entityId)
-    return entityId
+    const entityId = first(this.deletedEntityIds)
+    if (isUndefined(entityId)) {
+      return this.nextEntityId++
+    } else {
+      this.deletedEntityIds.delete(entityId)
+      return entityId
+    }
   }
 
   removeEntityId(entityId: number): void {
-    this.entityIds.delete(entityId)
     this.entityIdToComponentSet.delete(entityId)
+    this.deletedEntityIds.add(entityId)
   }
 
   componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
