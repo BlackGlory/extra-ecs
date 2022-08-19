@@ -68,8 +68,8 @@ export class World extends Emitter<{
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const components: Array<StructureOfArrays<T>> = []
-    const componetSet = go(() => {
+    const newAddedComponents: Array<StructureOfArrays<T>> = []
+    const componentSet = go(() => {
       const componentSet = this.entityIdToComponentSet.get(entityId)
       if (componentSet) {
         return componentSet
@@ -80,16 +80,17 @@ export class World extends Emitter<{
       }
     })
 
-    let added = false
     for (const [component, value] of componentValuePairs) {
-      componetSet.add(component)
-      components.push(component)
+      if (!componentSet.has(component)) {
+        newAddedComponents.push(component)
+      }
+      componentSet.add(component)
+
       component.push(value)
-      added = true
     }
 
-    if (added) {
-      this.emit('entityComponentsChanged', entityId, components)
+    if (newAddedComponents.length > 0) {
+      this.emit('entityComponentsChanged', entityId, newAddedComponents)
     }
   }
 
@@ -101,12 +102,12 @@ export class World extends Emitter<{
 
     const componentSet = this.entityIdToComponentSet.get(entityId)
     if (componentSet) {
-      let deleted = false
+      let changed = false
       for (const component of components) {
-        deleted ||= componentSet.delete(component)
+        changed ||= componentSet.delete(component)
       }
 
-      if (deleted) {
+      if (changed) {
         this.emit('entityComponentsChanged', entityId, components)
       }
     }
