@@ -60,7 +60,7 @@
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "standard-version": "^9.5.0",
-    "structure-of-arrays": "^0.2.3",
+    "structure-of-arrays": "^0.2.4",
     "ts-jest": "^27.1.4",
     "tscpaths": "^0.0.9",
     "tslib": "^2.3.1",
