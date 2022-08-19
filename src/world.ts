@@ -1,7 +1,8 @@
-import { go, assert, isUndefined, NonEmptyArray } from '@blackglory/prelude'
+import { go, assert, NonEmptyArray } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter, SparseSet } from '@blackglory/structures'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
+import { toArray } from 'iterable-operator'
 
 /**
  * 世界的本质是一个内存数据库管理系统.
@@ -11,10 +12,7 @@ export class World extends Emitter<{
 }> {
   private entityIds = new SparseSet()
   private nextEntityId: number = 0
-  private entityIdToComponentToIndex: Map<
-    number
-  , Map<StructureOfArrays<any>, number>
-  > = new Map()
+  private entityIdToComponentSet: Map<number, Set<StructureOfArrays<any>>> = new Map()
 
   getAllEntityIds(): Iterable<number> {
     return this.entityIds
@@ -35,7 +33,7 @@ export class World extends Emitter<{
 
   removeEntityId(entityId: number): void {
     this.entityIds.remove(entityId)
-    this.entityIdToComponentToIndex.delete(entityId)
+    this.entityIdToComponentSet.delete(entityId)
   }
 
   getComponentIndexes<T extends NonEmptyArray<StructureOfArrays<any>>>(
@@ -44,16 +42,12 @@ export class World extends Emitter<{
   ): MapProps<T, number | undefined> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentToIndex = this.entityIdToComponentToIndex.get(entityId)
-    if (isUndefined(componentToIndex)) {
-      return new Array(components.length) as MapProps<T, number>
-    } else {
-      const indexes: Array<number | undefined> = components.map(component => {
-        return componentToIndex.get(component)
-      })
-
-      return indexes as MapProps<T, number | undefined>
-    }
+    const componentSet = this.entityIdToComponentSet.get(entityId)
+    return components.map(component => {
+      return componentSet?.has(component)
+           ? entityId
+           : undefined
+    }) as MapProps<T, number | undefined>
   }
 
   componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
@@ -62,9 +56,9 @@ export class World extends Emitter<{
   ): MapProps<T, boolean> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentToIndex = this.entityIdToComponentToIndex.get(entityId)
-    if (componentToIndex) {
-      const results = components.map(component => componentToIndex.has(component))
+    const componentSet = this.entityIdToComponentSet.get(entityId)
+    if (componentSet) {
+      const results = components.map(component => componentSet.has(component))
       return results as MapProps<T, boolean>
     } else {
       return new Array(components.length).fill(false) as MapProps<T, boolean>
@@ -74,8 +68,10 @@ export class World extends Emitter<{
   getComponents(entityId: number): Iterable<StructureOfArrays<any>> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentToIndex = this.entityIdToComponentToIndex.get(entityId)
-    return componentToIndex ? componentToIndex.keys() : []
+    const componentSet = this.entityIdToComponentSet.get(entityId)
+    return componentSet
+         ? toArray(componentSet)
+         : []
   }
 
   addComponents<T extends Structure>(
@@ -87,29 +83,23 @@ export class World extends Emitter<{
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
     const components: Array<StructureOfArrays<T>> = []
-    const componentToIndex = go(() => {
-      const map = this.entityIdToComponentToIndex.get(entityId)
-      if (map) {
-        return map
+    const componetSet = go(() => {
+      const componentSet = this.entityIdToComponentSet.get(entityId)
+      if (componentSet) {
+        return componentSet
       } else {
-        const map = new Map<StructureOfArrays<T>, number>()
-        this.entityIdToComponentToIndex.set(entityId, map)
-        return map
+        const componentSet: Set<StructureOfArrays<any>> = new Set()
+        this.entityIdToComponentSet.set(entityId, componentSet)
+        return componentSet
       }
     })
 
     let added = false
     for (const [component, value] of componentValuePairs) {
+      componetSet.add(component)
       components.push(component)
-
-      const index = componentToIndex.get(component)
-      if (isUndefined(index)) {
-        const [index] = component.add(value)
-        componentToIndex.set(component, index)
-        added = true
-      } else {
-        componentToIndex.set(component, index)
-      }
+      component.push(value)
+      added = true
     }
 
     if (added) {
@@ -123,11 +113,11 @@ export class World extends Emitter<{
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentToIndex = this.entityIdToComponentToIndex.get(entityId)
-    if (componentToIndex) {
+    const componentSet = this.entityIdToComponentSet.get(entityId)
+    if (componentSet) {
       let deleted = false
       for (const component of components) {
-        deleted ||= componentToIndex.delete(component)
+        deleted ||= componentSet.delete(component)
       }
 
       if (deleted) {

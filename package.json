@@ -73,6 +73,6 @@
     "iterable-operator": "^1.2.0"
   },
   "peerDependencies": {
-    "structure-of-arrays": "^0.2.1"
+    "structure-of-arrays": "^0.2.4"
   }
 }
