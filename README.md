@@ -35,10 +35,9 @@ enemy.addComponents(
 const movableQuery = new Query(world, allOf(Position, Velocity))
 
 function movementSystem(deltaTime: number): void {
-  for (const entity of movableQuery.findAllEntities()) {
-    const [positionIndex, velocityIndex] = entity.getComponentIndexes(Position, Velocity)
-    Position.arrays.x[positionIndex!] += Velocity.arrays.x[velocityIndex!] * deltaTime
-    Position.arrays.y[positionIndex!] += Velocity.arrays.y[velocityIndex!] * deltaTime
+  for (const entity of movableQuery.findAllEntityId()) {
+    Position.arrays.x[entityId] += Velocity.arrays.x[entityId] * deltaTime
+    Position.arrays.y[entityId] += Velocity.arrays.y[entityId] * deltaTime
   }
 }
 
@@ -69,17 +68,14 @@ class World {
     entityId: number
   , ...components: NonEmptyArray<StructureOfArrays<T>>
   ): void
-
-  getComponentIndexes<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    entityId: number
-  , ...components: T
-  ): MapProps<T, number | undefined>
 }
 ```
 
 ### Entity
 ```ts
 class Entity {
+  id: number
+
   constructor(world: World, id: number = world.createEntityId())
 
   exists(): boolean
@@ -97,10 +93,6 @@ class Entity {
   removeComponents<T extends Structure>(
     ...components: NonEmptyArray<StructureOfArrays<T>>
   ): void
-
-  getComponentIndexes<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    ...components: T
-  ): MapProps<T, number | undefined>
 }
 ```
 

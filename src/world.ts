@@ -36,20 +36,6 @@ export class World extends Emitter<{
     this.entityIdToComponentSet.delete(entityId)
   }
 
-  getComponentIndexes<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    entityId: number
-  , ...components: T
-  ): MapProps<T, number | undefined> {
-    assert(this.hasEntityId(entityId), 'The entity does not exist')
-
-    const componentSet = this.entityIdToComponentSet.get(entityId)
-    return components.map(component => {
-      return componentSet?.has(component)
-           ? entityId
-           : undefined
-    }) as MapProps<T, number | undefined>
-  }
-
   componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
     entityId: number
   , ...components: NonEmptyArray<StructureOfArrays<any>>

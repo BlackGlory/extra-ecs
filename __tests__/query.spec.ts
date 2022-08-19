@@ -30,7 +30,7 @@ describe('Query', () => {
 
     expect(result).toBeIterable()
     expect(arr).toHaveLength(1)
-    expect(arr[0]._id).toBe(entity1._id)
+    expect(arr[0].id).toBe(entity1.id)
   })
 
   test('findAllEntityIds', () => {
@@ -48,7 +48,7 @@ describe('Query', () => {
 
     expect(result).toBeIterable()
     expect(arr).toHaveLength(1)
-    expect(arr).toStrictEqual([entity1._id])
+    expect(arr).toStrictEqual([entity1.id])
   })
 
   test('destroy', () => {
@@ -79,7 +79,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(1)
-      expect(arr).toStrictEqual([entity2._id])
+      expect(arr).toStrictEqual([entity2.id])
     })
 
     test('allOf', () => {
@@ -99,7 +99,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(1)
-      expect(arr).toStrictEqual([entity3._id])
+      expect(arr).toStrictEqual([entity3.id])
     })
 
     test('anyOf', () => {
@@ -119,7 +119,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(3)
-      expect(arr).toStrictEqual([entity1._id, entity2._id, entity3._id])
+      expect(arr).toStrictEqual([entity1.id, entity2.id, entity3.id])
     })
 
     test('oneOf', () => {
@@ -139,7 +139,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(2)
-      expect(arr).toStrictEqual([entity1._id, entity2._id])
+      expect(arr).toStrictEqual([entity1.id, entity2.id])
     })
 
     test('and', () => {
@@ -159,7 +159,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(1)
-      expect(arr).toStrictEqual([entity3._id])
+      expect(arr).toStrictEqual([entity3.id])
     })
 
     test('or', () => {
@@ -179,7 +179,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(3)
-      expect(arr).toStrictEqual([entity1._id, entity2._id, entity3._id])
+      expect(arr).toStrictEqual([entity1.id, entity2.id, entity3.id])
     })
 
     test('xor', () => {
@@ -199,7 +199,7 @@ describe('Query', () => {
       const arr = toArray(result)
 
       expect(arr).toHaveLength(2)
-      expect(arr).toStrictEqual([entity1._id, entity2._id])
+      expect(arr).toStrictEqual([entity1.id, entity2.id])
     })
   })
 })

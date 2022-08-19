@@ -6,31 +6,25 @@ import { World } from './world'
 export class Entity {
   constructor(
     private readonly world: World
-  , public readonly _id: number = world.createEntityId()
+  , public readonly id: number = world.createEntityId()
   ) {}
 
   exists(): boolean {
-    return this.world.hasEntityId(this._id)
+    return this.world.hasEntityId(this.id)
   }
 
   remove(): void {
-    this.world.removeEntityId(this._id)
-  }
-
-  getComponentIndexes<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    ...components: T
-  ): MapProps<T, number | undefined> {
-    return this.world.getComponentIndexes<T>(this._id, ...components)
+    this.world.removeEntityId(this.id)
   }
 
   getAllComponents(): Iterable<StructureOfArrays<any>> {
-    return this.world.getComponents(this._id)
+    return this.world.getComponents(this.id)
   }
 
   componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
     ...components: NonEmptyArray<StructureOfArrays<any>>
   ): MapProps<T, boolean> {
-    return this.world.componentsExist(this._id, ...components)
+    return this.world.componentsExist(this.id, ...components)
   }
 
   addComponents<T extends Structure>(
@@ -38,12 +32,12 @@ export class Entity {
       [component: StructureOfArrays<T>, value: StructurePrimitive<T>]
     >
   ): void {
-    this.world.addComponents(this._id, ...componentValuePairs)
+    this.world.addComponents(this.id, ...componentValuePairs)
   }
 
   removeComponents<T extends Structure>(
     ...components: NonEmptyArray<StructureOfArrays<T>>
   ): void {
-    this.world.removeComponents(this._id, ...components)
+    this.world.removeComponents(this.id, ...components)
   }
 }

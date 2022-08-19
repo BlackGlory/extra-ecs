@@ -13,7 +13,7 @@ describe('Entity', () => {
 
     const result = new Entity(world, id)
 
-    expect(result._id).toBe(id)
+    expect(result.id).toBe(id)
   })
 
   describe('exists', () => {
@@ -110,9 +110,10 @@ describe('Entity', () => {
     const entity = new Entity(world)
     const component = new StructureOfArrays({ id: int8 })
 
-    entity.addComponents([component, { id: 0 }])
+    entity.addComponents([component, { id: 1 }])
 
     expect(entity.componentsExist(component)[0]).toBe(true)
+    expect(component.arrays.id[entity.id]).toBe(1)
   })
 
   test('removeComponents', () => {
@@ -123,29 +124,5 @@ describe('Entity', () => {
     entity.removeComponents(component)
 
     expect(entity.componentsExist(component)[0]).toBe(false)
-  })
-
-  describe('getComponentIndexes', () => {
-    test('exists', () => {
-      const world = new World()
-      const component = new StructureOfArrays({ id: int8 })
-      const entity = new Entity(world)
-      entity.addComponents([component, { id: 100 }])
-
-      const [result] = entity.getComponentIndexes(component)
-
-      expect(isNumber(result)).toBeTruthy()
-      expect(component.arrays.id[result!]).toBe(100)
-    })
-
-    test('does not exist', () => {
-      const world = new World()
-      const component = new StructureOfArrays({ id: int8 })
-      const entity = new Entity(world)
-
-      const [result] = entity.getComponentIndexes(component)
-
-      expect(result).toBe(undefined)
-    })
   })
 })

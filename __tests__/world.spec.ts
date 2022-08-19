@@ -112,10 +112,8 @@ describe('World', () => {
     world.addComponents(entityId, [component, { id: 1 }])
 
     expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
-    const [index] = world.getComponentIndexes(entityId, component)
-    expect(index).not.toBe(undefined)
     expect(component.arrays.id.length).toBe(1)
-    expect(component.arrays.id[index!]).toBe(1)
+    expect(component.arrays.id[entityId]).toBe(1)
   })
 
   describe('removeComponents', () => {
@@ -127,8 +125,6 @@ describe('World', () => {
       world.removeComponents(entityId, component)
 
       expect(world.componentsExist(entityId, component)[0]).toStrictEqual(false)
-      const [index] = world.getComponentIndexes(entityId, component)
-      expect(index).toBe(undefined)
     })
 
     test('exists', () => {
@@ -140,8 +136,6 @@ describe('World', () => {
       world.removeComponents(entityId, component)
 
       expect(world.componentsExist(entityId, component)[0]).toStrictEqual(false)
-      const [index] = world.getComponentIndexes(entityId, component)
-      expect(index).toBe(undefined)
     })
   })
 
@@ -177,41 +171,6 @@ describe('World', () => {
 
         expect(result).toBeIterable()
         expect(arr).toStrictEqual([component])
-      })
-    })
-  })
-
-  describe('getComponentIndexes', () => {
-    test('entity does not exist', () => {
-      const world = new World()
-      const component = new StructureOfArrays({ id: int8 })
-
-      const err = getError(() => world.getComponentIndexes(0, component))
-
-      expect(err).toBeInstanceOf(Error)
-    })
-
-    describe('eneity exists', () => {
-      test('does not exist', () => {
-        const world = new World()
-        const component = new StructureOfArrays({ id: int8 })
-        const entityId = world.createEntityId()
-
-        const result = world.getComponentIndexes(entityId, component)
-
-        expect(result).toEqual([undefined])
-      })
-
-      test('exists', () => {
-        const world = new World()
-        const component = new StructureOfArrays({ id: int8 })
-        const entityId = world.createEntityId()
-        world.addComponents(entityId, [component, { id: 1 }])
-
-        const result = world.getComponentIndexes(entityId, component)
-
-        expect(result).toStrictEqual([expect.any(Number)])
-        expect(component.arrays.id[result[0]!]).toBe(1)
       })
     })
   })
