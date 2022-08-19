@@ -72,7 +72,7 @@ class World {
 
   getComponentIndexes<T extends NonEmptyArray<StructureOfArrays<any>>>(
     entityId: number
-  , components: T
+  , ...components: T
   ): MapProps<T, number | undefined>
 }
 ```
