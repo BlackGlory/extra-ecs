@@ -1,5 +1,4 @@
 import { StructureOfArrays } from 'structure-of-arrays'
-import { SparseSet } from '@blackglory/structures'
 import { some, map } from 'iterable-operator'
 import { World } from './world'
 import { Entity } from './entity'
@@ -8,8 +7,8 @@ import { assert } from '@blackglory/prelude'
 
 export class Query {
   private isAvailable: boolean = true
-  private entityIds: SparseSet = new SparseSet()
-  private relatedComponents: Set<StructureOfArrays<any>> = new Set()
+  private entityIds = new Set<number>()
+  private relatedComponents = new Set<StructureOfArrays<any>>()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
   , (entityId: number, components: Array<StructureOfArrays<any>>): void => {
@@ -17,7 +16,7 @@ export class Query {
       if (isRelated) {
         if (this.entityIds.has(entityId)) {
           if (!this.isMatch(entityId)) {
-            this.entityIds.remove(entityId)
+            this.entityIds.delete(entityId)
           }
         } else {
           if (this.isMatch(entityId)) {
@@ -58,7 +57,7 @@ export class Query {
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
-    return this.entityIds[Symbol.iterator]()
+    return this.entityIds.values()
   }
 
   private * extractComponents(

@@ -1,6 +1,6 @@
 import { go, assert, NonEmptyArray } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
-import { Emitter, SparseSet } from '@blackglory/structures'
+import { Emitter } from '@blackglory/structures'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
 import { toArray } from 'iterable-operator'
 
@@ -10,12 +10,12 @@ import { toArray } from 'iterable-operator'
 export class World extends Emitter<{
   entityComponentsChanged: [entityId: number, components: Array<StructureOfArrays<any>>]
 }> {
-  private entityIds = new SparseSet()
+  private entityIds = new Set<number>()
   private nextEntityId: number = 0
   private entityIdToComponentSet: Map<number, Set<StructureOfArrays<any>>> = new Map()
 
   getAllEntityIds(): Iterable<number> {
-    return this.entityIds
+    return this.entityIds.values()
   }
 
   hasEntityId(entity: number): boolean {
@@ -32,7 +32,7 @@ export class World extends Emitter<{
   }
 
   removeEntityId(entityId: number): void {
-    this.entityIds.remove(entityId)
+    this.entityIds.delete(entityId)
     this.entityIdToComponentSet.delete(entityId)
   }
 
@@ -81,12 +81,13 @@ export class World extends Emitter<{
     })
 
     for (const [component, value] of componentValuePairs) {
-      if (!componentSet.has(component)) {
+      if (componentSet.has(component)) {
+        component.upsert(entityId, value)
+      } else {
+        componentSet.add(component)
+        component.upsert(entityId, value)
         newAddedComponents.push(component)
       }
-      componentSet.add(component)
-
-      component.push(value)
     }
 
     if (newAddedComponents.length > 0) {
