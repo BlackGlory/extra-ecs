@@ -344,15 +344,15 @@
     iterable-operator "^1.1.0"
     justypes "^2.0.0"
 
-"@blackglory/structures@^0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.10.0.tgz#bb339d6e643ff2bb0e92f2ac4130164d6d0ec6ac"
-  integrity sha512-DNc6kfTQq2U89qf53hiEm678LbSpbkEWZ9RxlR/vH7x5gj8jZxa0kz4m0pt2OO1BIxu7TaHVWDQ1DHzj+33rRw==
+"@blackglory/structures@^0.10.2":
+  version "0.10.2"
+  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.10.2.tgz#09d89d3c6d476fa96d208de2e32f1711fe25f86b"
+  integrity sha512-5x5mPwEW7eD5kIKT+m8S4FC/zJnCVFxUUiAKa7+8rkcbunkSZR/+GbguisERwp9/mblr0GKuMN6U6v+OBE2Q7g==
   dependencies:
     "@blackglory/errors" "^2.2.1"
     "@blackglory/types" "^1.2.1"
     extra-timers "^0.2.5"
-    iterable-operator "^1.1.0"
+    iterable-operator "^1.2.1"
     justypes "^2.2.0"
     rxjs "^7.5.5"
 
@@ -3450,6 +3450,16 @@ iterable-operator@^1.1.0, iterable-operator@^1.2.0:
     "@blackglory/go" "^1.1.2"
     "@blackglory/types" "^1.2.1"
     justypes "^2.0.1"
+
+iterable-operator@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/iterable-operator/-/iterable-operator-1.2.1.tgz#f24be5929a571bac6c51c2dff9f0fe535fa4bf54"
+  integrity sha512-wxW7d467ZY9OKWDAPQTdR7zTyQgEVt7k4VLAZ/Y+x5lnen023oFbo1QfxMMNw+PZAhfETjRyzPOGmxBg5vS7bw==
+  dependencies:
+    "@blackglory/errors" "^2.2.2"
+    "@blackglory/go" "^1.1.2"
+    "@blackglory/types" "^1.2.1"
+    justypes "^2.2.0"
 
 jest-changed-files@^27.5.1:
   version "27.5.1"
