@@ -1,4 +1,6 @@
 # extra-ecs
+This is an experimental project, please use it with care.
+
 ## Install
 ```sh
 npm install --save extra-ecs
