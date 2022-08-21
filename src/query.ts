@@ -8,6 +8,9 @@ import { assert } from '@blackglory/prelude'
 export class Query {
   private isAvailable: boolean = true
   private entityIds = new Set<number>()
+  private sortedEntityIds: number[] = []
+  private entityIdsAdded: boolean = false
+  private entityIdsDeleted: boolean = false
   private relatedComponents = new Set<StructureOfArrays<any>>()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
@@ -17,10 +20,13 @@ export class Query {
         if (this.entityIds.has(entityId)) {
           if (!this.isMatch(entityId)) {
             this.entityIds.delete(entityId)
+            this.entityIdsDeleted = true
           }
         } else {
           if (this.isMatch(entityId)) {
             this.entityIds.add(entityId)
+            this.sortedEntityIds.push(entityId)
+            this.entityIdsAdded = true
           }
         }
       }
@@ -44,20 +50,33 @@ export class Query {
     for (const entityId of this.world.getAllEntityIds()) {
       if (this.isMatch(entityId)) {
         this.entityIds.add(entityId)
+        this.sortedEntityIds.push(entityId)
       }
     }
+
+    this.sortedEntityIds.sort()
   }
 
   findAllEntities(): Iterable<Entity> {
     assert(this.isAvailable, 'The query is not available')
 
-    return map(this.entityIds[Symbol.iterator](), id => new Entity(this.world, id))
+    return map(this.findAllEntityIds(), id => new Entity(this.world, id))
   }
 
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
-    return this.entityIds.values()
+    // 经过升序排序的entityIds可以大幅增加访问性能, 因为这更符合内存顺序访问的顺序.
+    if (this.entityIdsDeleted) {
+      this.sortedEntityIds = [...this.entityIds].sort()
+      this.entityIdsDeleted = false
+      this.entityIdsAdded = false
+    } else if (this.entityIdsAdded) {
+      this.sortedEntityIds.sort()
+      this.entityIdsAdded = false
+    }
+
+    return this.sortedEntityIds
   }
 
   private * extractComponents(
