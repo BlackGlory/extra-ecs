@@ -344,10 +344,10 @@
     iterable-operator "^1.1.0"
     justypes "^2.0.0"
 
-"@blackglory/structures@^0.10.2":
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.10.2.tgz#09d89d3c6d476fa96d208de2e32f1711fe25f86b"
-  integrity sha512-5x5mPwEW7eD5kIKT+m8S4FC/zJnCVFxUUiAKa7+8rkcbunkSZR/+GbguisERwp9/mblr0GKuMN6U6v+OBE2Q7g==
+"@blackglory/structures@^0.10.3":
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.10.3.tgz#40168f9f274763022e0640750602f6174deb60d6"
+  integrity sha512-y3XFSOu6/+PMonL/8PEKj6FqfDWfBlacifF4OtlxQtP6Ljemlz9GCeYLl5trPuDHU2qRuFNtBo+F2abNJbqzBw==
   dependencies:
     "@blackglory/errors" "^2.2.1"
     "@blackglory/types" "^1.2.1"
