@@ -8,6 +8,9 @@ import { assert } from '@blackglory/prelude'
 export class Query {
   private isAvailable: boolean = true
   private entityIds = new Set<number>()
+  // 经过升序排序的entityIds可以大幅增加访问性能,
+  // 因为这更符合内存顺序访问的顺序, 同时在分支预测方面也更有利.
+  // 需要注意的是, 天然升序的BitSet不能替代sortedEntityIds, 因为遍历元素时的孔洞太多.
   private sortedEntityIds: number[] = []
   private entityIdsAdded: boolean = false
   private entityIdsDeleted: boolean = false
@@ -66,7 +69,6 @@ export class Query {
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
-    // 经过升序排序的entityIds可以大幅增加访问性能, 因为这更符合内存顺序访问的顺序.
     if (this.entityIdsDeleted) {
       this.sortedEntityIds = [...this.entityIds].sort()
       this.entityIdsDeleted = false
