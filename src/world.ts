@@ -1,18 +1,20 @@
 import { go, assert, NonEmptyArray, isUndefined } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
-import { Emitter } from '@blackglory/structures'
+import { Emitter, BitSet } from '@blackglory/structures'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
-import { toArray, first } from 'iterable-operator'
+import { toArray, first, map } from 'iterable-operator'
+import { Component, ComponentRegistry } from './component'
 
 /**
  * 世界的本质是一个内存数据库管理系统.
  */
 export class World extends Emitter<{
-  entityComponentsChanged: [entityId: number, components: Array<StructureOfArrays<any>>]
+  entityComponentsChanged: [entityId: number, componentIds: number[]]
 }> {
   private nextEntityId: number = 0
-  private deletedEntityIds = new Set<number>()
-  private entityIdToComponentSet: Map<number, Set<StructureOfArrays<any>>> = new Map()
+  private deletedEntityIds: BitSet = new BitSet()
+  private entityIdToComponentIdSet: Map<number, BitSet> = new Map()
+  readonly componentRegistry = new ComponentRegistry()
 
   ;* getAllEntityIds(): Iterable<number> {
     for (let entityId = 0; entityId < this.nextEntityId; entityId++) {
@@ -20,6 +22,10 @@ export class World extends Emitter<{
         yield entityId
       }
     }
+  }
+
+  getComponentIndex(entityId: number, component: Component): number {
+    return entityId
   }
 
   hasEntityId(entityId: number): boolean {
@@ -41,31 +47,38 @@ export class World extends Emitter<{
   }
 
   removeEntityId(entityId: number): void {
-    this.entityIdToComponentSet.delete(entityId)
+    this.entityIdToComponentIdSet.delete(entityId)
     this.deletedEntityIds.add(entityId)
   }
 
-  componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
+  componentsExist<T extends NonEmptyArray<Component>>(
     entityId: number
-  , ...components: NonEmptyArray<StructureOfArrays<any>>
+  , ...components: T
   ): MapProps<T, boolean> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this.entityIdToComponentSet.get(entityId)
-    if (componentSet) {
-      const results = components.map(component => componentSet.has(component))
+    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
+    if (componentIdSet) {
+      const results = components.map(component => {
+        return componentIdSet.has(this.componentRegistry.getId(component))
+      })
       return results as MapProps<T, boolean>
     } else {
       return new Array(components.length).fill(false) as MapProps<T, boolean>
     }
   }
 
-  getComponents(entityId: number): Iterable<StructureOfArrays<any>> {
+  getComponents(entityId: number): Iterable<Component> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this.entityIdToComponentSet.get(entityId)
-    return componentSet
-         ? toArray(componentSet)
+    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
+    return componentIdSet
+         ? toArray(
+             map(
+               componentIdSet
+             , id => this.componentRegistry.getComponent(id)!
+             )
+           )
          : []
   }
 
@@ -77,48 +90,51 @@ export class World extends Emitter<{
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const newAddedComponents: Array<StructureOfArrays<T>> = []
-    const componentSet = go(() => {
-      const componentSet = this.entityIdToComponentSet.get(entityId)
+    const componentIdSet = go(() => {
+      const componentSet = this.entityIdToComponentIdSet.get(entityId)
       if (componentSet) {
         return componentSet
       } else {
-        const componentSet: Set<StructureOfArrays<any>> = new Set()
-        this.entityIdToComponentSet.set(entityId, componentSet)
-        return componentSet
+        const componentIdSet: BitSet = new BitSet()
+        this.entityIdToComponentIdSet.set(entityId, componentIdSet)
+        return componentIdSet
       }
     })
 
+    const newAddedComponentIds: number[] = []
     for (const [component, value] of componentValuePairs) {
-      if (componentSet.has(component)) {
+      const componentId = this.componentRegistry.getId(component)
+      if (componentIdSet.has(componentId)) {
         component.upsert(entityId, value)
       } else {
-        componentSet.add(component)
+        componentIdSet.add(componentId)
         component.upsert(entityId, value)
-        newAddedComponents.push(component)
+        newAddedComponentIds.push(componentId)
       }
     }
 
-    if (newAddedComponents.length > 0) {
-      this.emit('entityComponentsChanged', entityId, newAddedComponents)
+    if (newAddedComponentIds.length > 0) {
+      this.emit('entityComponentsChanged', entityId, newAddedComponentIds)
     }
   }
 
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<StructureOfArrays<T>>
+  , ...components: NonEmptyArray<Component<T>>
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this.entityIdToComponentSet.get(entityId)
-    if (componentSet) {
+    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
+    if (componentIdSet) {
       let changed = false
+      const componentIds: number[] = []
       for (const component of components) {
-        changed ||= componentSet.delete(component)
+        const componentId = this.componentRegistry.getId(component)
+        changed ||= componentIdSet.delete(componentId)
       }
 
       if (changed) {
-        this.emit('entityComponentsChanged', entityId, components)
+        this.emit('entityComponentsChanged', entityId, componentIds)
       }
     }
   }

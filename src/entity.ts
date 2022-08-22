@@ -2,6 +2,7 @@ import { NonEmptyArray } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
 import { World } from './world'
+import { Component } from './component'
 
 export class Entity {
   constructor(
@@ -17,12 +18,12 @@ export class Entity {
     this.world.removeEntityId(this.id)
   }
 
-  getAllComponents(): Iterable<StructureOfArrays<any>> {
+  getAllComponents(): Iterable<Component> {
     return this.world.getComponents(this.id)
   }
 
-  componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    ...components: NonEmptyArray<StructureOfArrays<any>>
+  componentsExist<T extends NonEmptyArray<Component>>(
+    ...components: T
   ): MapProps<T, boolean> {
     return this.world.componentsExist(this.id, ...components)
   }
@@ -36,7 +37,7 @@ export class Entity {
   }
 
   removeComponents<T extends Structure>(
-    ...components: NonEmptyArray<StructureOfArrays<T>>
+    ...components: NonEmptyArray<Component<T>>
   ): void {
     this.world.removeComponents(this.id, ...components)
   }

@@ -1,24 +1,25 @@
-import { StructureOfArrays } from 'structure-of-arrays'
 import { some, map } from 'iterable-operator'
 import { World } from './world'
 import { Entity } from './entity'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
+import { Component } from './component'
+import { BitSet } from '@blackglory/structures'
 
 export class Query {
   private isAvailable: boolean = true
-  private entityIds = new Set<number>()
+  private entityIds: BitSet = new BitSet()
   // 经过升序排序的entityIds可以大幅增加访问性能,
   // 因为这更符合内存顺序访问的顺序, 同时在分支预测方面也更有利.
   // 需要注意的是, 天然升序的BitSet不能替代sortedEntityIds, 因为遍历元素时的孔洞太多.
   private sortedEntityIds: number[] = []
   private entityIdsAdded: boolean = false
   private entityIdsDeleted: boolean = false
-  private relatedComponents = new Set<StructureOfArrays<any>>()
+  private relatedComponentIds: BitSet = new BitSet()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
-  , (entityId: number, components: Array<StructureOfArrays<any>>): void => {
-      const isRelated = components.some(component => this.isComponentRelated(component))
+  , (entityId: number, componentIds: number[]): void => {
+      const isRelated = componentIds.some(componentId => this.isComponentIdRelated(componentId))
       if (isRelated) {
         if (this.entityIds.has(entityId)) {
           if (!this.isMatch(entityId)) {
@@ -46,7 +47,7 @@ export class Query {
   ) {
     // init `this.relatedComponents`
     for (const component of this.extractComponents(pattern)) {
-      this.relatedComponents.add(component)
+      this.relatedComponentIds.add(this.world.componentRegistry.getId(component))
     }
 
     // init `this.entitiyIds`
@@ -81,9 +82,7 @@ export class Query {
     return this.sortedEntityIds
   }
 
-  private * extractComponents(
-    pattern: Pattern
-  ): Generator<StructureOfArrays<any>, void, void> {
+  private * extractComponents(pattern: Pattern): IterableIterator<Component> {
     if (isExpression(pattern)) {
       if (isNot(pattern)) {
         const [, ...patterns] = pattern
@@ -113,8 +112,8 @@ export class Query {
     }
   }
 
-  private isComponentRelated(component: StructureOfArrays<any>): boolean {
-    return this.relatedComponents.has(component)
+  private isComponentIdRelated(componentId: number): boolean {
+    return this.relatedComponentIds.has(componentId)
   }
 
   private isMatch(entityId: number, pattern: Pattern = this.pattern): boolean {

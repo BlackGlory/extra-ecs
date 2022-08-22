@@ -1,8 +1,8 @@
 import { isArray, NonEmptyArray } from '@blackglory/prelude'
-import { StructureOfArrays } from 'structure-of-arrays'
+import { Component } from './component'
 
 export type Pattern =
-| StructureOfArrays<any>
+| Component
 | Expression
 
 type Expression =
