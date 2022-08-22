@@ -91,9 +91,9 @@ export class World extends Emitter<{
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
     const componentIdSet = go(() => {
-      const componentSet = this.entityIdToComponentIdSet.get(entityId)
-      if (componentSet) {
-        return componentSet
+      const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
+      if (componentIdSet) {
+        return componentIdSet
       } else {
         const componentIdSet: Set<number> = new Set()
         this.entityIdToComponentIdSet.set(entityId, componentIdSet)
