@@ -3,17 +3,17 @@ import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
 import { toArray, first, map } from 'iterable-operator'
-import { Component, ComponentRegistry } from './component'
+import { Component, ComponentId, ComponentRegistry } from './component'
 
 /**
  * 世界的本质是一个内存数据库管理系统.
  */
 export class World extends Emitter<{
-  entityComponentsChanged: [entityId: number, componentIds: number[]]
+  entityComponentsChanged: [entityId: number, componentIds: ComponentId[]]
 }> {
   private nextEntityId: number = 0
   private deletedEntityIds: Set<number> = new Set()
-  private entityIdToComponentIdSet: Map<number, Set<number>> = new Map()
+  private entityIdToComponentIdSet: Map<number, Set<ComponentId>> = new Map()
   readonly componentRegistry = new ComponentRegistry()
 
   ;* getAllEntityIds(): Iterable<number> {
@@ -95,13 +95,13 @@ export class World extends Emitter<{
       if (componentIdSet) {
         return componentIdSet
       } else {
-        const componentIdSet: Set<number> = new Set()
+        const componentIdSet: Set<ComponentId> = new Set()
         this.entityIdToComponentIdSet.set(entityId, componentIdSet)
         return componentIdSet
       }
     })
 
-    const newAddedComponentIds: number[] = []
+    const newAddedComponentIds: ComponentId[] = []
     for (const [component, value] of componentValuePairs) {
       const componentId = this.componentRegistry.getId(component)
       if (componentIdSet.has(componentId)) {
@@ -127,7 +127,7 @@ export class World extends Emitter<{
     const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
     if (componentIdSet) {
       let changed = false
-      const componentIds: number[] = []
+      const componentIds: ComponentId[] = []
       for (const component of components) {
         const componentId = this.componentRegistry.getId(component)
         changed ||= componentIdSet.delete(componentId)

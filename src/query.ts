@@ -3,7 +3,7 @@ import { World } from './world'
 import { Entity } from './entity'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
-import { Component } from './component'
+import { Component, ComponentId } from './component'
 
 export class Query {
   private isAvailable: boolean = true
@@ -13,10 +13,10 @@ export class Query {
   private sortedEntityIds: number[] = []
   private entityIdsAdded: boolean = false
   private entityIdsDeleted: boolean = false
-  private relatedComponentIds: Set<number> = new Set()
+  private relatedComponentIds: Set<ComponentId> = new Set()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
-  , (entityId: number, componentIds: number[]): void => {
+  , (entityId: number, componentIds: ComponentId[]): void => {
       const isRelated = componentIds.some(componentId => this.isComponentIdRelated(componentId))
       if (isRelated) {
         if (this.entityIds.has(entityId)) {
@@ -110,7 +110,7 @@ export class Query {
     }
   }
 
-  private isComponentIdRelated(componentId: number): boolean {
+  private isComponentIdRelated(componentId: ComponentId): boolean {
     return this.relatedComponentIds.has(componentId)
   }
 

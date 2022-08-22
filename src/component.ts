@@ -2,13 +2,14 @@ import { StructureOfArrays, Structure } from 'structure-of-arrays'
 import { isUndefined } from '@blackglory/prelude'
 
 export type Component<T extends Structure = any> = StructureOfArrays<T>
+export type ComponentId = bigint
 
 export class ComponentRegistry {
-  private nextExponential: number = 0
-  private idToComponent: Map<number, Component> = new Map()
-  private componentToId: Map<Component, number> = new Map()
+  private nextExponential: ComponentId = 0n
+  private idToComponent: Map<ComponentId, Component> = new Map()
+  private componentToId: Map<Component, ComponentId> = new Map()
 
-  getId(component: Component): number {
+  getId(component: Component): ComponentId {
     const id = this.componentToId.get(component)
     if (isUndefined(id)) {
       const id = this.createId()
@@ -20,11 +21,11 @@ export class ComponentRegistry {
     }
   }
 
-  getComponent(id: number): Component | undefined {
+  getComponent(id: ComponentId): Component | undefined {
     return this.idToComponent.get(id)
   }
 
-  private createId(): number {
-    return 1 << this.nextExponential++
+  private createId(): ComponentId {
+    return 1n << this.nextExponential++
   }
 }
