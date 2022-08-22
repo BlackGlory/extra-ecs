@@ -4,18 +4,16 @@ import { Entity } from './entity'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
 import { Component } from './component'
-import { BitSet } from '@blackglory/structures'
 
 export class Query {
   private isAvailable: boolean = true
-  private entityIds: BitSet = new BitSet()
+  private entityIds: Set<number> = new Set()
   // 经过升序排序的entityIds可以大幅增加访问性能,
   // 因为这更符合内存顺序访问的顺序, 同时在分支预测方面也更有利.
-  // 需要注意的是, 天然升序的BitSet不能替代sortedEntityIds, 因为遍历元素时的孔洞太多.
   private sortedEntityIds: number[] = []
   private entityIdsAdded: boolean = false
   private entityIdsDeleted: boolean = false
-  private relatedComponentIds: BitSet = new BitSet()
+  private relatedComponentIds: Set<number> = new Set()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
   , (entityId: number, componentIds: number[]): void => {
