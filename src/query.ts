@@ -1,4 +1,4 @@
-import { some, map } from 'iterable-operator'
+import { some, map, filter, every, drop, count } from 'iterable-operator'
 import { World } from './world'
 import { Entity } from './entity'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
@@ -83,24 +83,20 @@ export class Query {
   private * extractComponents(pattern: Pattern): IterableIterator<Component> {
     if (isExpression(pattern)) {
       if (isNot(pattern)) {
-        const [, ...patterns] = pattern
-        for (const pattern of patterns) {
-          yield* this.extractComponents(pattern)
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
         }
       } else if (isAllOf(pattern)) {
-        const [, ...patterns] = pattern
-        for (const pattern of patterns) {
-          yield* this.extractComponents(pattern)
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
         }
       } else if (isAnyOf(pattern)) {
-        const [, ...patterns] = pattern
-        for (const pattern of patterns) {
-          yield* this.extractComponents(pattern)
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
         }
       } else if (isOneOf(pattern)) {
-        const [, ...patterns] = pattern
-        for (const pattern of patterns) {
-          yield* this.extractComponents(pattern)
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
         }
       } else {
         throw new Error('Invalid pattern')
@@ -117,17 +113,25 @@ export class Query {
   private isMatch(entityId: number, pattern: Pattern = this.pattern): boolean {
     if (isExpression(pattern)) {
       if (isNot(pattern)) {
-        const [, ...patterns] = pattern
-        return !patterns.some(pattern => this.isMatch(entityId, pattern))
+        return !some(
+          drop(pattern, 1) as Iterable<Pattern>
+        , pattern => this.isMatch(entityId, pattern)
+        )
       } else if (isAllOf(pattern)) {
-        const [, ...patterns] = pattern
-        return patterns.every(pattern => this.isMatch(entityId, pattern))
+        return every(
+          drop(pattern, 1) as Iterable<Pattern>
+        , pattern => this.isMatch(entityId, pattern)
+        )
       } else if (isAnyOf(pattern)) {
-        const [, ...patterns] = pattern
-        return patterns.some(pattern => this.isMatch(entityId, pattern))
+        return some(
+          drop(pattern, 1) as Iterable<Pattern>
+        , pattern => this.isMatch(entityId, pattern)
+        )
       } else if (isOneOf(pattern)) {
-        const [, ...patterns] = pattern
-        return patterns.filter(pattern => this.isMatch(entityId, pattern)).length === 1
+        return count(filter(
+          drop(pattern, 1) as Iterable<Pattern>
+        , pattern => this.isMatch(entityId, pattern)
+        )) === 1
       } else {
         throw new Error('Invalid pattern')
       }
