@@ -4,7 +4,7 @@ import { isUndefined } from '@blackglory/prelude'
 export type Component<T extends Structure = any> = StructureOfArrays<T>
 
 export class ComponentRegistry {
-  private nextId: number = 0
+  private nextExponential: number = 0
   private idToComponent: Map<number, Component> = new Map()
   private componentToId: Map<Component, number> = new Map()
 
@@ -25,6 +25,6 @@ export class ComponentRegistry {
   }
 
   private createId(): number {
-    return 2 ** this.nextId++
+    return 2 ** this.nextExponential++
   }
 }
