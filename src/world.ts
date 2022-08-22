@@ -1,6 +1,6 @@
 import { go, assert, NonEmptyArray, isUndefined } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
-import { Emitter, BitSet } from '@blackglory/structures'
+import { Emitter } from '@blackglory/structures'
 import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
 import { toArray, first, map } from 'iterable-operator'
 import { Component, ComponentRegistry } from './component'
@@ -12,8 +12,8 @@ export class World extends Emitter<{
   entityComponentsChanged: [entityId: number, componentIds: number[]]
 }> {
   private nextEntityId: number = 0
-  private deletedEntityIds: BitSet = new BitSet()
-  private entityIdToComponentIdSet: Map<number, BitSet> = new Map()
+  private deletedEntityIds: Set<number> = new Set()
+  private entityIdToComponentIdSet: Map<number, Set<number>> = new Map()
   readonly componentRegistry = new ComponentRegistry()
 
   ;* getAllEntityIds(): Iterable<number> {
@@ -95,7 +95,7 @@ export class World extends Emitter<{
       if (componentSet) {
         return componentSet
       } else {
-        const componentIdSet: BitSet = new BitSet()
+        const componentIdSet: Set<number> = new Set()
         this.entityIdToComponentIdSet.set(entityId, componentIdSet)
         return componentIdSet
       }
