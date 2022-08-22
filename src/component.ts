@@ -25,6 +25,6 @@ export class ComponentRegistry {
   }
 
   private createId(): number {
-    return 2 ** this.nextExponential++
+    return 1 << this.nextExponential++
   }
 }
