@@ -1,4 +1,4 @@
-import { go, assert, NonEmptyArray, isUndefined } from '@blackglory/prelude'
+import { go, assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
 import { StructureOfArrays, Structure, MapStructureToPrimitive } from 'structure-of-arrays'
@@ -84,8 +84,9 @@ export class World extends Emitter<{
 
   addComponents<T extends Structure>(
     entityId: number
-  , ...componentValuePairs: NonEmptyArray<
-      [component: StructureOfArrays<T>, value: MapStructureToPrimitive<T>]
+  , ...components: NonEmptyArray<
+    | [array: StructureOfArrays<T>, value: MapStructureToPrimitive<T>]
+    | symbol
     >
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
@@ -102,14 +103,21 @@ export class World extends Emitter<{
     })
 
     const newAddedComponentIds: ComponentId[] = []
-    for (const [component, value] of componentValuePairs) {
-      const componentId = this.componentRegistry.getId(component)
-      if (componentIdSet.has(componentId)) {
-        component.upsert(entityId, value)
-      } else {
+    for (const component of components) {
+      if (isSymbol(component)) {
+        const componentId = this.componentRegistry.getId(component)
         componentIdSet.add(componentId)
-        component.upsert(entityId, value)
         newAddedComponentIds.push(componentId)
+      } else {
+        const [array, value] = component
+        const componentId = this.componentRegistry.getId(array)
+        if (componentIdSet.has(componentId)) {
+          array.upsert(entityId, value)
+        } else {
+          componentIdSet.add(componentId)
+          array.upsert(entityId, value)
+          newAddedComponentIds.push(componentId)
+        }
       }
     }
 

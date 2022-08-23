@@ -63,7 +63,7 @@
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@blackglory/prelude": "^0.1.3",
+    "@blackglory/prelude": "^0.1.4",
     "@blackglory/structures": "^0.10.11",
     "hotypes": "^0.4.6",
     "iterable-operator": "^1.2.1"

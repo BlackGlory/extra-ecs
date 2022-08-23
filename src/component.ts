@@ -1,7 +1,10 @@
 import { StructureOfArrays, Structure } from 'structure-of-arrays'
 import { isUndefined } from '@blackglory/prelude'
 
-export type Component<T extends Structure = any> = StructureOfArrays<T>
+export type Component<T extends Structure = any> =
+| StructureOfArrays<T>
+| symbol
+
 export type ComponentId = bigint
 
 export class ComponentRegistry {
