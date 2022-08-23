@@ -1,7 +1,7 @@
 import { go, assert, NonEmptyArray, isUndefined } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
-import { StructureOfArrays, Structure, StructurePrimitive } from 'structure-of-arrays'
+import { StructureOfArrays, Structure, MapStructureToPrimitive } from 'structure-of-arrays'
 import { toArray, first, map } from 'iterable-operator'
 import { Component, ComponentId, ComponentRegistry } from './component'
 
@@ -85,7 +85,7 @@ export class World extends Emitter<{
   addComponents<T extends Structure>(
     entityId: number
   , ...componentValuePairs: NonEmptyArray<
-      [component: StructureOfArrays<T>, value: StructurePrimitive<T>]
+      [component: StructureOfArrays<T>, value: MapStructureToPrimitive<T>]
     >
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
