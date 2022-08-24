@@ -330,7 +330,7 @@
   resolved "https://registry.yarnpkg.com/@blackglory/pass/-/pass-1.0.1.tgz#bbb7b6ac48ff23a06415bd0fe9fb1d713b194860"
   integrity sha512-uR857ZFp7QSzwYd8rV3N4sxtTNXXjcdSnIxGv/Krf/pwPCXRQVAwb5z2lpsS68XUS0utWTGZKseYs0AvcmFoRw==
 
-"@blackglory/prelude@^0.1.0", "@blackglory/prelude@^0.1.3":
+"@blackglory/prelude@^0.1.0":
   version "0.1.3"
   resolved "https://registry.yarnpkg.com/@blackglory/prelude/-/prelude-0.1.3.tgz#2a24a646e4a51b9cc62c4bf31a92de01648be793"
   integrity sha512-IMdas/JBevCypbaVSe0IQK3oYQegC6WqOjTckqrpdM+iviXGKaHoTd3lijOcCf9jYYyOFmKt0yk1IwDUHkaKNQ==
@@ -358,10 +358,10 @@
     iterable-operator "^1.2.1"
     justypes "^2.2.0"
 
-"@blackglory/structures@^0.10.11":
-  version "0.10.11"
-  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.10.11.tgz#1e5a47466b38949c788b926e16582a0f7a8906a4"
-  integrity sha512-+pS0YTlwv72Fbxb12JDgwqZ/IEKHQDU2fojVPo4Z35MkqAwC891953wpfUhsuXTSLa5RCaUaE47k3dl3SecFzQ==
+"@blackglory/structures@^0.10.12":
+  version "0.10.12"
+  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.10.12.tgz#7fa86c7d9b6ca63e544a6907c67acf034f8c9f02"
+  integrity sha512-Un6R3XCIRxl58/VZa61lmTxz8EokFdZIgFyHw9svW1Q3SDFJrTZkSX0OU9SssIOrattJekhEWUosdZJF03R1NA==
   dependencies:
     "@blackglory/errors" "^2.2.1"
     "@blackglory/types" "^1.2.1"
@@ -920,10 +920,10 @@
     "@rollup/pluginutils" "^3.1.0"
     magic-string "^0.25.7"
 
-"@rollup/plugin-typescript@^8.3.4":
-  version "8.3.4"
-  resolved "https://registry.yarnpkg.com/@rollup/plugin-typescript/-/plugin-typescript-8.3.4.tgz#45cdc0787b658b37d0362c705d8de86bc8bc040e"
-  integrity sha512-wt7JnYE9antX6BOXtsxGoeVSu4dZfw0dU3xykfOQ4hC3EddxRbVG/K0xiY1Wup7QOHJcjLYXWAn0Kx9Z1SBHHg==
+"@rollup/plugin-typescript@^8.4.0":
+  version "8.4.0"
+  resolved "https://registry.yarnpkg.com/@rollup/plugin-typescript/-/plugin-typescript-8.4.0.tgz#a8a384b6dbaab42b4cafb075278b15743c0f5ef8"
+  integrity sha512-QssfoOP6V4/6skX12EfOW5UzJAv/c334F4OJWmQpe2kg3agEa0JwVCckwmfuvEgDixyX+XyxjFenH7M2rDKUyQ==
   dependencies:
     "@rollup/pluginutils" "^3.1.0"
     resolve "^1.17.0"
@@ -5358,13 +5358,13 @@ strip-json-comments@^3.1.0, strip-json-comments@^3.1.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
-structure-of-arrays@^0.4.0:
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/structure-of-arrays/-/structure-of-arrays-0.4.0.tgz#8ff9bcd331703ad43d06a199138e4f6a8568f19a"
-  integrity sha512-IRXfhH0on8FP4XkuruTyWWIeOSacPmuxg7Ndy297pc3csJL6NyhTy451o6mfust6WkCOx9Vpm7sfsC/sj+Qckw==
+structure-of-arrays@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/structure-of-arrays/-/structure-of-arrays-0.4.1.tgz#b26eab9cd172ca4e34b1327673ac3ddbab4d89b1"
+  integrity sha512-rmewm5tuIJm4fBa+ZivUWSIdPhHHLVOT3fjwY4TkIBzNSr5oduN1SrWeU4gHLq2aKDPDoeFZFTTvpeq5N1pM4g==
   dependencies:
-    "@blackglory/prelude" "^0.1.3"
-    "@blackglory/structures" "^0.10.11"
+    "@blackglory/prelude" "^0.1.4"
+    "@blackglory/structures" "^0.10.12"
     iterable-operator "^1.2.1"
     justypes "^2.2.0"
 
