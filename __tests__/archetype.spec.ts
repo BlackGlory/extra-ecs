@@ -330,6 +330,39 @@ describe('Archetype', () => {
       })
     })
   })
+
+  test('getValue', () => {
+    const world = new World()
+    const entityId1 = world.createEntityId()
+    const entityId2 = world.createEntityId()
+    const component = new Component(world, { value: int8 })
+    world.addComponents(entityId1, [component, { value: 1 }])
+    world.addComponents(entityId2, [component, { value: 2 }])
+
+    const archetype = world._archetypeRegistry.getArchtype(component.id)!
+    const result1 = archetype.getValue(entityId1, component, 'value')
+    const result2 = archetype.getValue(entityId2, component, 'value')
+
+    expect(result1).toBe(1)
+    expect(result2).toBe(2)
+  })
+
+  test('setValue', () => {
+    const world = new World()
+    const entityId1 = world.createEntityId()
+    const entityId2 = world.createEntityId()
+    const component = new Component(world, { value: int8 })
+    world.addComponents(entityId1, [component, { value: 1 }])
+    world.addComponents(entityId2, [component, { value: 2 }])
+
+    const archetype = world._archetypeRegistry.getArchtype(component.id)!
+    archetype.setValue(entityId1, component, 'value', 10)
+    archetype.setValue(entityId2, component, 'value', 20)
+
+    const storage = archetype.getStorage(component)!
+    expect(storage.get(entityId1, 'value')).toBe(10)
+    expect(storage.get(entityId2, 'value')).toBe(20)
+  })
 })
 
 describe('computeArchetypeId', () => {

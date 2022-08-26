@@ -82,6 +82,31 @@ export class Archetype {
   getStorage(component: Component): StructureOfSparseMaps<any> | undefined {
     return this.componentIdToStorage.get(component.id)!
   }
+
+  getValue(
+    entityId: number
+  , component: Component
+  , key: string
+  ): string | boolean | number | undefined {
+    const storage = this.getStorage(component)
+    if (storage) {
+      return storage.get(entityId, key)
+    } else {
+      return undefined
+    }
+  }
+
+  setValue(
+    entityId: number
+  , component: Component
+  , key: string
+  , value: string | boolean | number
+  ): void {
+    const storage = this.getStorage(component)
+    if (storage) {
+      storage.update(entityId, key, value)
+    }
+  }
 }
 
 export function computeArchetypeId(

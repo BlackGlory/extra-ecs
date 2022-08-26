@@ -42,16 +42,20 @@ world.addComponents(
 const movableQuery = new Query(world, allOf(Position, Velocity))
 
 function movementSystem(deltaTime: number): void {
-  for (const entityId of movableQuery.findAllEntityId()) {
-    Position.setValue(
+  for (const [archetype, entityId] of movableQuery.findAllEntityId()) {
+    archetype.setValue(
       entityId
+    , Position
     , 'x'
-    , Position.getValue(entityId, 'x') + Velocity.getValue(entityId, 'x') * deltaTime
+    , archetype.getValue(entityId, Position, 'x')
+      + archetype.getValue(entityId, Velocity, 'x') * deltaTime
     )
-    Position.setValue(
+    archetype.setValue(
       entityId
+    , Position
     , 'y 
-    , Position.getValue(entityId, 'y') + Velocity.getValue(entityId, 'y') * deltaTime
+    , archetype.getValue(entityId, Position, 'y')
+      + Velocity.getValue(entityId, Velocity, 'y') * deltaTime
     )
   }
 }
@@ -86,17 +90,6 @@ class Component<T extends Structure = any> {
   readonly structure?: T
 
   constructor(world: World, structure?: T)
-
-  getValue<U extends keyof T>(
-    entityId: number
-  , key: U
-  ): MapTypesOfStructureToPrimitives<T>[U] | undefined
-
-  setValue<U extends keyof T>(
-    entityId: number
-  , key: U
-  , value: MapTypesOfStructureToPrimitives<T>[U]
-  ): void
 }
 ```
 
@@ -107,6 +100,24 @@ class Query {
 
   findAllEntityIds(): Iterable<EntityId>
   destroy(): void
+}
+```
+
+### Archetype
+```ts
+class Archetype {
+  getValue(
+    entityId: number
+  , component: Component
+  , key: string
+  ): string | boolean | number | undefined
+
+  setValue(
+    entityId: number
+  , component: Component
+  , key: string
+  , value: string | boolean | number
+  ): void
 }
 ```
 
