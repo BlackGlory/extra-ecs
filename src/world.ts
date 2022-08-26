@@ -1,13 +1,16 @@
-import { go, assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
+import {
+  go
+, assert
+, NonEmptyArray
+, isUndefined
+, isSymbol
+} from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
-import {
-  StructureOfArrays
-, Structure
-, MapTypesOfStructureToPrimitives
-} from 'structure-of-arrays'
+import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
 import { toArray, first, map } from 'iterable-operator'
-import { Component, ComponentId, ComponentRegistry } from './component'
+import { Component, ComponentId } from './component'
+import { ComponentRegistry } from './component-registry'
 
 /**
  * 世界的本质是一个内存数据库管理系统.
@@ -28,15 +31,6 @@ export class World extends Emitter<{
     }
   }
 
-  getComponentIndex(entityId: number, component: Component): number {
-    return entityId
-  }
-
-  hasEntityId(entityId: number): boolean {
-    return entityId < this.nextEntityId
-        && !this.deletedEntityIds.has(entityId)
-  }
-
   /**
    * entityId是entity的主键, 与数据库主键不同, 该键可以被重用.
    */
@@ -48,6 +42,11 @@ export class World extends Emitter<{
       this.deletedEntityIds.delete(entityId)
       return entityId
     }
+  }
+
+  hasEntityId(entityId: number): boolean {
+    return entityId < this.nextEntityId
+        && !this.deletedEntityIds.has(entityId)
   }
 
   removeEntityId(entityId: number): void {
@@ -64,7 +63,7 @@ export class World extends Emitter<{
     const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
     if (componentIdSet) {
       const results = components.map(component => {
-        return componentIdSet.has(this.componentRegistry.getId(component))
+        return componentIdSet.has(this.componentRegistry.getComponentId(component))
       })
       return results as MapProps<T, boolean>
     } else {
@@ -88,9 +87,8 @@ export class World extends Emitter<{
 
   addComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<
-    | [array: StructureOfArrays<T>, value: MapTypesOfStructureToPrimitives<T>]
-    | symbol
+  , ...componentValuePairs: NonEmptyArray<
+      [component: Component<T>, value?: MapTypesOfStructureToPrimitives<T>]
     >
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
@@ -107,19 +105,20 @@ export class World extends Emitter<{
     })
 
     const newAddedComponentIds: ComponentId[] = []
-    for (const component of components) {
+    for (const componentValuePair of componentValuePairs) {
+      const [component, value] = componentValuePair
+
       if (isSymbol(component)) {
-        const componentId = this.componentRegistry.getId(component)
+        const componentId = this.componentRegistry.getComponentId(component)
         componentIdSet.add(componentId)
         newAddedComponentIds.push(componentId)
       } else {
-        const [array, value] = component
-        const componentId = this.componentRegistry.getId(array)
+        const componentId = this.componentRegistry.getComponentId(component)
         if (componentIdSet.has(componentId)) {
-          array.upsert(entityId, value)
+          component.upsert(entityId, value)
         } else {
           componentIdSet.add(componentId)
-          array.upsert(entityId, value)
+          component.upsert(entityId, value)
           newAddedComponentIds.push(componentId)
         }
       }
@@ -132,10 +131,7 @@ export class World extends Emitter<{
 
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<
-    | Component<T>
-    | symbol
-    >
+  , ...components: NonEmptyArray<Component<T>>
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
@@ -144,7 +140,7 @@ export class World extends Emitter<{
       let changed = false
       const componentIds: ComponentId[] = []
       for (const component of components) {
-        const componentId = this.componentRegistry.getId(component)
+        const componentId = this.componentRegistry.getComponentId(component)
         changed ||= componentIdSet.delete(componentId)
       }
 

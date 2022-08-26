@@ -28,15 +28,15 @@ const player = world.createEntityId()
 const enemy = world.createEntityId()
 world.addComponents(
   player
-, [Position, { x: 0, y: 0 }]
+, [Position] // equivalent to [Position, { x: 0, y: 0 }]
 , [Velocity, { x: 10, y: 0 }]
-, Enabled
+, [Enabled]
 )
 world.addComponents(
   enemy
 , [Position, { x: 100, y: 0 }]
 , [Velocitiy, { x: -10, y: 0 }]
-, Enabled
+, [Enabled]
 )
 
 const movableQuery = new Query(world, allOf(Position, Velocity, Enabled))
@@ -52,6 +52,12 @@ movementSystem(deltaTime)
 ```
 
 ## API
+```ts
+type Component<T extends Structure = any> =
+| StructureOfArrays<T>
+| symbol
+```
+
 ### World
 ```ts
 class World {
@@ -60,24 +66,20 @@ class World {
   hasEntityId(entityId: number): boolean
   removeEntityId(entityId: number): void
 
-  getComponents(entityId: number): Iterable<StructureOfArrays<any>>
-  componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
+  componentsExist<T extends NonEmptyArray<Component>>(
     entityId: number
-  , ...components: NonEmptyArray<StructureOfArrays<any>>
+  , ...components: T
   ): MapProps<T, boolean>
+  getComponents(entityId: number): Iterable<Component>
   addComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<
-    | [array: StructureOfArrays<T>, value: MapTypesOfStructureToPrimitives<T>]
-    | symbol
+  , ...componentValuePairs: NonEmptyArray<
+      [component: Component<T>, value?: MapTypesOfStructureToPrimitives<T>]
     >
   ): void
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<
-    | StructureOfArrays<T>
-    | symbol
-    >
+  , ...components: NonEmptyArray<Component<T>>
   ): void
 }
 ```
@@ -96,7 +98,7 @@ class Query {
 #### Patterns
 ```ts
 type Pattern =
-| StructureOfArrays<any>
+| Component
 | Expression
 
 type Expression =

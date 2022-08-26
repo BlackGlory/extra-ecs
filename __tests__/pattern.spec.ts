@@ -1,10 +1,9 @@
-import { StructureOfArrays, int8 } from 'structure-of-arrays'
 import { Operator, allOf, and, anyOf, not, oneOf, or, xor } from '@src/pattern'
 
 describe('Patterns', () => {
   test('not', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = not(component1, component2)
 
@@ -12,8 +11,8 @@ describe('Patterns', () => {
   })
 
   test('allOf', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = allOf(component1, component2)
 
@@ -21,8 +20,8 @@ describe('Patterns', () => {
   })
 
   test('anyOf', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = anyOf(component1, component2)
 
@@ -30,8 +29,8 @@ describe('Patterns', () => {
   })
 
   test('oneOf', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = oneOf(component1, component2)
 
@@ -39,8 +38,8 @@ describe('Patterns', () => {
   })
 
   test('and', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = and(component1, component2)
 
@@ -48,8 +47,8 @@ describe('Patterns', () => {
   })
 
   test('or', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = or(component1, component2)
 
@@ -57,8 +56,8 @@ describe('Patterns', () => {
   })
 
   test('xor', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
 
     const result = xor(component1, component2)
 

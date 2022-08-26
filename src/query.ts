@@ -1,4 +1,4 @@
-import { some, map, filter, every, drop, count } from 'iterable-operator'
+import { some, filter, every, drop, count } from 'iterable-operator'
 import { World } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
@@ -44,7 +44,7 @@ export class Query {
   ) {
     // init `this.relatedComponents`
     for (const component of this.extractComponents(pattern)) {
-      this.relatedComponentIds.add(this.world.componentRegistry.getId(component))
+      this.relatedComponentIds.add(this.world.componentRegistry.getComponentId(component))
     }
 
     // init `this.entitiyIds`

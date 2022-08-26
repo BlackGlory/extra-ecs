@@ -5,10 +5,6 @@ import { getError } from 'return-style'
 import '@blackglory/jest-matchers'
 
 describe('World', () => {
-  test('create', () => {
-    new World()
-  })
-
   describe('getAllEntityIds', () => {
     test('empty', () => {
       const world = new World()
@@ -73,7 +69,7 @@ describe('World', () => {
   describe('componentsExist', () => {
     test('entity does not exist', () => {
       const world = new World()
-      const component = new StructureOfArrays({ id: int8 })
+      const component = Symbol()
 
       const err = getError(() => world.componentsExist(0, component))
 
@@ -83,7 +79,7 @@ describe('World', () => {
     describe('entity exists', () => {
       test('does not exist', () => {
         const world = new World()
-        const component = new StructureOfArrays({ id: int8 })
+        const component = Symbol()
         const entityId = world.createEntityId()
 
         const result = world.componentsExist(entityId, component)
@@ -93,9 +89,9 @@ describe('World', () => {
 
       test('exist', () => {
         const world = new World()
-        const component = new StructureOfArrays({ id: int8 })
+        const component = Symbol()
         const entityId = world.createEntityId()
-        world.addComponents(entityId, [component, { id: 0 }])
+        world.addComponents(entityId, [component])
 
         const result = world.componentsExist(entityId, component)
 
@@ -104,22 +100,36 @@ describe('World', () => {
     })
   })
 
-  test('addComponents', () => {
-    const world = new World()
-    const component = new StructureOfArrays({ id: int8 })
-    const entityId = world.createEntityId()
+  describe('addComponents', () => {
+    test('with value', () => {
+      const world = new World()
+      const component = new StructureOfArrays({ value: int8 })
+      const entityId = world.createEntityId()
 
-    world.addComponents(entityId, [component, { id: 1 }])
+      world.addComponents(entityId, [component, { value: 1 }])
 
-    expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
-    expect(component.arrays.id.length).toBe(1)
-    expect(component.arrays.id[entityId]).toBe(1)
+      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
+      expect(component.arrays.value.length).toBe(1)
+      expect(component.arrays.value[entityId]).toBe(1)
+    })
+
+    test('without value', () => {
+      const world = new World()
+      const component = new StructureOfArrays({ value: int8 })
+      const entityId = world.createEntityId()
+
+      world.addComponents(entityId, [component])
+
+      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
+      expect(component.arrays.value.length).toBe(1)
+      expect(component.arrays.value[entityId]).toBe(0)
+    })
   })
 
   describe('removeComponents', () => {
     test('does not exist', () => {
       const world = new World()
-      const component = new StructureOfArrays({ id: int8 })
+      const component = Symbol()
       const entityId = world.createEntityId()
 
       world.removeComponents(entityId, component)
@@ -129,9 +139,9 @@ describe('World', () => {
 
     test('exists', () => {
       const world = new World()
-      const component = new StructureOfArrays({ id: int8 })
+      const component = Symbol()
       const entityId = world.createEntityId()
-      world.addComponents(entityId, [component, { id: 1 }])
+      world.addComponents(entityId, [component])
 
       world.removeComponents(entityId, component)
 
@@ -163,8 +173,8 @@ describe('World', () => {
       test('exists', () => {
         const world = new World()
         const entityId = world.createEntityId()
-        const component = new StructureOfArrays({ id: int8 })
-        world.addComponents(entityId, [component, { id: 0 }])
+        const component = Symbol()
+        world.addComponents(entityId, [component])
 
         const result = world.getComponents(entityId)
         const arr = toArray(result)

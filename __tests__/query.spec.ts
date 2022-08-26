@@ -1,4 +1,3 @@
-import { StructureOfArrays, int8 } from 'structure-of-arrays'
 import { Query } from '@src/query'
 import { not, and, or, xor, allOf, anyOf, oneOf } from '@src/pattern'
 import { toArray } from 'iterable-operator'
@@ -7,21 +6,14 @@ import { getError } from 'return-style'
 import '@blackglory/jest-matchers'
 
 describe('Query', () => {
-  test('create', () => {
-    const world = new World()
-    const component = new StructureOfArrays({ id: int8 })
-
-    new Query(world, component)
-  })
-
   test('findAllEntityIds', () => {
     const world = new World()
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const component1 = Symbol()
+    const component2 = Symbol()
     const entityId1 = world.createEntityId()
-    world.addComponents(entityId1, [component1, { id: 0 }])
+    world.addComponents(entityId1, [component1])
     const entityId2 = world.createEntityId()
-    world.addComponents(entityId2, [component2, { id: 0 }])
+    world.addComponents(entityId2, [component2])
     const query = new Query(world, component1)
 
     const result = query.findAllEntityIds()
@@ -34,7 +26,7 @@ describe('Query', () => {
 
   test('destroy', () => {
     const world = new World()
-    const component = new StructureOfArrays({ id: int8 })
+    const component = Symbol()
     const query = new Query(world, component)
 
     query.destroy()
@@ -48,12 +40,12 @@ describe('Query', () => {
   describe('matching', () => {
     test('not', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
 
       const query = new Query(world, not(component1))
       const result = query.findAllEntityIds()
@@ -65,15 +57,15 @@ describe('Query', () => {
 
     test('allOf', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
       const entityId3 = world.createEntityId()
-      world.addComponents(entityId3, [component1, { id: 0 }])
-      world.addComponents(entityId3, [component2, { id: 0 }])
+      world.addComponents(entityId3, [component1])
+      world.addComponents(entityId3, [component2])
 
       const query = new Query(world, allOf(component1, component2))
       const result = query.findAllEntityIds()
@@ -85,15 +77,15 @@ describe('Query', () => {
 
     test('anyOf', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
       const entityId3 = world.createEntityId()
-      world.addComponents(entityId3, [component1, { id: 0 }])
-      world.addComponents(entityId3, [component2, { id: 0 }])
+      world.addComponents(entityId3, [component1])
+      world.addComponents(entityId3, [component2])
 
       const query = new Query(world, anyOf(component1, component2))
       const result = query.findAllEntityIds()
@@ -105,15 +97,15 @@ describe('Query', () => {
 
     test('oneOf', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
       const entityId3 = world.createEntityId()
-      world.addComponents(entityId3, [component1, { id: 0 }])
-      world.addComponents(entityId3, [component2, { id: 0 }])
+      world.addComponents(entityId3, [component1])
+      world.addComponents(entityId3, [component2])
 
       const query = new Query(world, oneOf(component1, component2))
       const result = query.findAllEntityIds()
@@ -125,15 +117,15 @@ describe('Query', () => {
 
     test('and', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
       const entityId3 = world.createEntityId()
-      world.addComponents(entityId3, [component1, { id: 0 }])
-      world.addComponents(entityId3, [component2, { id: 0 }])
+      world.addComponents(entityId3, [component1])
+      world.addComponents(entityId3, [component2])
 
       const query = new Query(world, and(component1, component2))
       const result = query.findAllEntityIds()
@@ -145,15 +137,15 @@ describe('Query', () => {
 
     test('or', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
       const entityId3 = world.createEntityId()
-      world.addComponents(entityId3, [component1, { id: 0 }])
-      world.addComponents(entityId3, [component2, { id: 0 }])
+      world.addComponents(entityId3, [component1])
+      world.addComponents(entityId3, [component2])
 
       const query = new Query(world, or(component1, component2))
       const result = query.findAllEntityIds()
@@ -165,15 +157,15 @@ describe('Query', () => {
 
     test('xor', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ id: int8 })
-      const component2 = new StructureOfArrays({ id: int8 })
+      const component1 = Symbol()
+      const component2 = Symbol()
       const entityId1 = world.createEntityId()
-      world.addComponents(entityId1, [component1, { id: 0 }])
+      world.addComponents(entityId1, [component1])
       const entityId2 = world.createEntityId()
-      world.addComponents(entityId2, [component2, { id: 0 }])
+      world.addComponents(entityId2, [component2])
       const entityId3 = world.createEntityId()
-      world.addComponents(entityId3, [component1, { id: 0 }])
-      world.addComponents(entityId3, [component2, { id: 0 }])
+      world.addComponents(entityId3, [component1])
+      world.addComponents(entityId3, [component2])
 
       const query = new Query(world, xor(component1, component2))
       const result = query.findAllEntityIds()
