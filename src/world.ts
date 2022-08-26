@@ -1,7 +1,7 @@
 import { go, assert, NonEmptyArray } from '@blackglory/prelude'
 import { Emitter } from '@blackglory/structures'
 import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
-import { map, includes, filter, toSet } from 'iterable-operator'
+import { map, includes, filter } from 'iterable-operator'
 import { Component } from './component'
 import { ComponentRegistry } from './component-registry'
 import {
@@ -46,7 +46,7 @@ export class World extends Emitter<{
 
     // 创建或获取符合entity新形状的archetype.
     const archetype: Archetype = go(() => {
-      const componentSet = toSet(
+      const componentSet = new Set(
         map(
           componentValuePairs
         , ([component]) => component
@@ -60,12 +60,12 @@ export class World extends Emitter<{
           // 并非所有新component已经在archtype里, 需要变更enttiy对应的archetype
 
           const archetype = go(() => {
-            const newComponentSet = toSet([
+            const newComponentSet = new Set([
               ...oldArchetype.getAllComponents()
             , ...componentSet
             ])
             const newArchetypeId = computeArchetypeId(
-              toSet(map(newComponentSet, component => component.id))
+              new Set(map(newComponentSet, component => component.id))
             )
             const achetype = this._archetypeRegistry.getArchtype(newArchetypeId)
             if (achetype) {
@@ -92,7 +92,7 @@ export class World extends Emitter<{
 
         const archetype = go(() => {
           const archetypeId = computeArchetypeId(
-            toSet(map(componentSet, component => component.id))
+            new Set(map(componentSet, component => component.id))
           )
           const archetype = this._archetypeRegistry.getArchtype(archetypeId)
           if (archetype) {
@@ -134,19 +134,19 @@ export class World extends Emitter<{
       if (oldArchetype) {
         // entity已经有一个archetype, 意味着该entity不是第一次增减component
 
-        const componentSet = toSet(components)
+        const componentSet = new Set(components)
         if (
           includes(oldArchetype.hasComponents(componentSet), true)
         ) {
           // 需要被删除的component在archetype里存在, 需要变更enttiy对应的archetype
 
           const newArchetype = go(() => {
-            const newComponentSet = toSet(filter(
+            const newComponentSet = new Set(filter(
               oldArchetype.getAllComponents()
             , component => !includes(components, component)
             ))
             const newArchetypeId = computeArchetypeId(
-              toSet(map(newComponentSet, component => component.id))
+              new Set(map(newComponentSet, component => component.id))
             )
             const archetype = this._archetypeRegistry.getArchtype(newArchetypeId)
             if (archetype) {

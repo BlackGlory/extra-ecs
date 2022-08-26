@@ -1,6 +1,5 @@
-import { map, toSet, first } from 'iterable-operator'
+import { map, first } from 'iterable-operator'
 import { StructureOfSparseMaps } from 'structure-of-arrays'
-import { go } from '@blackglory/prelude'
 import { Component, ComponentId } from './component'
 import { EntityId } from './entity-id'
 import { World } from './world'
@@ -32,7 +31,7 @@ export class Archetype {
       }
     }
 
-    const componentIdSet = toSet(
+    const componentIdSet = new Set(
       map(componentSet, component => component.id)
     )
     this.id = computeArchetypeId(componentIdSet)
