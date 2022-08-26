@@ -111,8 +111,8 @@ export class World extends Emitter<{
       if (value) {
         const storage = archetype.getStorage(component)
         if (storage) {
-          for (const [key, val] of Object.entries(value)) {
-            storage.arrays[key][entityId] = val
+          for (const key of storage.keys) {
+            storage.arrays[key][entityId] = value[key]
           }
         }
       }
