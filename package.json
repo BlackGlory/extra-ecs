@@ -59,13 +59,13 @@
     "ts-jest": "^27.1.4",
     "tscpaths": "^0.0.9",
     "tslib": "^2.3.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.8.2"
   },
   "dependencies": {
     "@blackglory/prelude": "^0.1.4",
-    "@blackglory/structures": "^0.10.13",
+    "@blackglory/structures": "^0.10.14",
     "hotypes": "^0.4.7",
     "iterable-operator": "^1.2.1",
-    "structure-of-arrays": "^0.5.4"
+    "structure-of-arrays": "^0.5.5"
   }
 }
