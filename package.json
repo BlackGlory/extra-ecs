@@ -26,6 +26,7 @@
     "build:compile": "tsc --project tsconfig.build.json --module commonjs",
     "build:patch": "tscpaths -p tsconfig.build.json -s ./src -o ./lib",
     "bundle": "rollup --config rollup.config.js",
+    "bench": "./benches/benchmark.sh",
     "release": "standard-version"
   },
   "husky": {
@@ -44,6 +45,7 @@
     "@rollup/plugin-replace": "^4.0.0",
     "@rollup/plugin-typescript": "^8.4.0",
     "@types/jest": "^27.4.1",
+    "@types/node": "^18.7.13",
     "@typescript-eslint/eslint-plugin": "^5.35.1",
     "@typescript-eslint/parser": "^5.35.1",
     "eslint": "^8.22.0",
