@@ -1,10 +1,12 @@
-import { StructureOfArrays, int8 } from 'structure-of-arrays'
+import { Component, int8 } from '@src/component'
+import { World } from '@src/world'
 import { Operator, allOf, and, anyOf, not, oneOf, or, xor } from '@src/pattern'
 
 describe('Patterns', () => {
   test('not', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = not(component1, component2)
 
@@ -12,8 +14,9 @@ describe('Patterns', () => {
   })
 
   test('allOf', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = allOf(component1, component2)
 
@@ -21,8 +24,9 @@ describe('Patterns', () => {
   })
 
   test('anyOf', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = anyOf(component1, component2)
 
@@ -30,8 +34,9 @@ describe('Patterns', () => {
   })
 
   test('oneOf', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = oneOf(component1, component2)
 
@@ -39,8 +44,9 @@ describe('Patterns', () => {
   })
 
   test('and', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = and(component1, component2)
 
@@ -48,8 +54,9 @@ describe('Patterns', () => {
   })
 
   test('or', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = or(component1, component2)
 
@@ -57,8 +64,9 @@ describe('Patterns', () => {
   })
 
   test('xor', () => {
-    const component1 = new StructureOfArrays({ id: int8 })
-    const component2 = new StructureOfArrays({ id: int8 })
+    const world = new World()
+    const component1 = new Component(world, { value: int8 })
+    const component2 = new Component(world, { value: int8 })
 
     const result = xor(component1, component2)
 

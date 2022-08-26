@@ -1,34 +1,64 @@
-import { StructureOfArrays, Structure } from 'structure-of-arrays'
-import { isUndefined } from '@blackglory/prelude'
-
-export type Component<T extends Structure = any> =
-| StructureOfArrays<T>
-| symbol
+import { go } from '@blackglory/go'
+import { Structure, MapTypesOfStructureToInternalArrays } from 'structure-of-arrays'
+import { isntUndefined } from '@blackglory/prelude'
+import { World } from './world'
+export {
+  int8
+, int16
+, int32
+, uint8
+, uint16
+, uint32
+, double
+, float
+, boolean
+, string
+} from 'structure-of-arrays'
 
 export type ComponentId = bigint
 
-export class ComponentRegistry {
-  private nextExponential: ComponentId = 0n
-  private idToComponent: Map<ComponentId, Component> = new Map()
-  private componentToId: Map<Component, ComponentId> = new Map()
+export class Component<T extends Structure = any> {
+  readonly arrays: MapTypesOfStructureToInternalArrays<T>
+  readonly id: ComponentId = this.world._componentRegistry.getComponentId(this)
 
-  getId(component: Component): ComponentId {
-    const id = this.componentToId.get(component)
-    if (isUndefined(id)) {
-      const id = this.createId()
-      this.componentToId.set(component, id)
-      this.idToComponent.set(id, component)
-      return id
-    } else {
-      return id
-    }
-  }
+  constructor(
+    private world: World
+  , public readonly structure?: T
+  ) {
+    this.arrays = go(() => {
+      // 通过原型在V8优化defineProperty
+      // https://stackoverflow.com/questions/36338289/object-descriptor-getter-setter-performance-in-recent-chrome-v8-versions
+      const internalArrays: Record<string, unknown> = {}
 
-  getComponent(id: ComponentId): Component | undefined {
-    return this.idToComponent.get(id)
-  }
+      if (structure) {
+        Object.keys(structure).forEach(key => {
+          const proxy = new Proxy(Object.create([]), {
+            set: (_, property: string, value: number | string | boolean): boolean => {
+              const entityId = Number.parseInt(property, 10)
+              const archetype = this.world._entityArchetypeRegistry.getArchetype(entityId)!
+              const storage = archetype.getStorage(this)!
+              const index = storage.getInternalIndex(entityId)
+              storage.arrays[key][index] = value
+              return true
+            }
+          , get: (_, property: string): number | string | boolean | undefined => {
+              const entityId = Number.parseInt(property, 10)
+              const archetype = this.world._entityArchetypeRegistry.getArchetype(entityId)!
+              const storage = archetype.getStorage(this)!
+              const index = storage.tryGetInternalIndex(entityId)
+              if (isntUndefined(index)) {
+                return storage.arrays[key][index]
+              } else {
+                return undefined
+              }
+            }
+          })
 
-  private createId(): ComponentId {
-    return 1n << this.nextExponential++
+          internalArrays[key] = proxy
+        })
+      }
+
+      return Object.create(internalArrays) as MapTypesOfStructureToInternalArrays<T>
+    })
   }
 }

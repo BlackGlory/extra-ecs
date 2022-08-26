@@ -10,34 +10,39 @@ yarn add extra-ecs
 
 ## Usage
 ```ts
-import { StructureOfArrays, double } from 'structure-of-arrays'
-import { World, Query, Entity, allOf } from 'extra-ecs'
-
-const Position = new StructureOfArrays({
-  x: double
-, y: double
-})
-const Velocity = new StructureOfArrays({
-  x: double
-, y: double
-})
+import { World, Component, Query, allOf, double } from 'extra-ecs'
 
 const world = new World()
-const player = new Entity(world)
-const enemy = new Entity(world)
-player.addComponents(
-  [Position, { x: 0, y: 0 }]
+
+const Position = new Component(world, {
+  x: double
+, y: double
+})
+const Velocity = new Component(world, {
+  x: double
+, y: double
+})
+const Available = new Component(world)
+
+const player = world.createEntityId()
+const enemy = world.createEntityId()
+world.addComponents(
+  player
+, [Position, { x: 0, y: 0 }]
 , [Velocity, { x: 10, y: 0 }]
+, [Available]
 )
-enemy.addComponents(
-  [Position, { x: 100, y: 0 }]
+world.addComponents(
+  enemy
+, [Position, { x: 100, y: 0 }]
 , [Velocitiy, { x: -10, y: 0 }]
+, [Available]
 )
 
 const movableQuery = new Query(world, allOf(Position, Velocity))
 
 function movementSystem(deltaTime: number): void {
-  for (const entity of movableQuery.findAllEntityId()) {
+  for (const entityId of movableQuery.findAllEntityId()) {
     Position.arrays.x[entityId] += Velocity.arrays.x[entityId] * deltaTime
     Position.arrays.y[entityId] += Velocity.arrays.y[entityId] * deltaTime
   }
@@ -50,65 +55,39 @@ movementSystem(deltaTime)
 ### World
 ```ts
 class World {
-  getAllEntityIds(): Iterable<number>
-  createEntityId(): number
-  hasEntityId(entityId: number): boolean
-  removeEntityId(entityId: number): void
+  createEntityId(): EntityId
+  removeEntityId(entityId: EntityId): void
 
-  getComponents(entityId: number): Iterable<StructureOfArrays<any>>
-  componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    entityId: number
-  , ...components: NonEmptyArray<StructureOfArrays<any>>
-  ): MapProps<T, boolean>
   addComponents<T extends Structure>(
     entityId: number
   , ...componentValuePairs: NonEmptyArray<
-      [component: StructureOfArrays<T>, value: StructurePrimitive<T>]
+      [array: Component<T>, value?: MapTypesOfStructureToPrimitives<T>]
     >
   ): void
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<StructureOfArrays<T>>
+  , ...components: NonEmptyArray<Component<T>>
   ): void
 }
 ```
 
-### Entity
+### Component
 ```ts
-class Entity {
-  id: number
+class Component<T extends Structure = any> {
+  readonly arrays: MapTypesOfStructureToInternalArrays<T>
+  readonly id: ComponentId
+  readonly structure?: T
 
-  constructor(world: World, id: number = world.createEntityId())
-
-  exists(): boolean
-  remove(): void
-
-  getAllComponents(): Iterable<StructureOfArrays<any>> | undefined
-  componentsExist<T extends NonEmptyArray<StructureOfArrays<any>>>(
-    ...components: NonEmptyArray<StructureOfArrays<any>>
-  ): MapProps<T, boolean>
-  addComponents<T extends Structure>(
-    ...componentValuePairs: NonEmptyArray<
-      [component: StructureOfArrays<T>, value: StructurePrimitive<T>]
-    >
-  ): void
-  removeComponents<T extends Structure>(
-    ...components: NonEmptyArray<StructureOfArrays<T>>
-  ): void
+  constructor(world: World, structure?: T)
 }
 ```
-
-`Entity` is an anemic model, its methods are provided in `World`.
-Depending on coding style, you may not use it.
 
 ### Query
 ```ts
 class Query {
   constructor(world: World, pattern: Pattern)
 
-  findAllEntities(): Iterable<Entity>
-  findAllEntityIds(): Iterable<number>
-
+  findAllEntityIds(): Iterable<EntityId>
   destroy(): void
 }
 ```
@@ -116,7 +95,7 @@ class Query {
 #### Patterns
 ```ts
 type Pattern =
-| StructureOfArrays<any>
+| Component
 | Expression
 
 type Expression =
