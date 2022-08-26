@@ -1,7 +1,11 @@
 import { go, assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
-import { StructureOfArrays, Structure, MapStructureToPrimitive } from 'structure-of-arrays'
+import {
+  StructureOfArrays
+, Structure
+, MapTypesOfStructureToPrimitives
+} from 'structure-of-arrays'
 import { toArray, first, map } from 'iterable-operator'
 import { Component, ComponentId, ComponentRegistry } from './component'
 
@@ -85,7 +89,7 @@ export class World extends Emitter<{
   addComponents<T extends Structure>(
     entityId: number
   , ...components: NonEmptyArray<
-    | [array: StructureOfArrays<T>, value: MapStructureToPrimitive<T>]
+    | [array: StructureOfArrays<T>, value: MapTypesOfStructureToPrimitives<T>]
     | symbol
     >
   ): void {

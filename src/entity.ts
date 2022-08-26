@@ -1,6 +1,10 @@
 import { NonEmptyArray } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
-import { StructureOfArrays, Structure, MapStructureToPrimitive } from 'structure-of-arrays'
+import {
+  StructureOfArrays
+, Structure
+, MapTypesOfStructureToPrimitives
+} from 'structure-of-arrays'
 import { World } from './world'
 import { Component } from './component'
 
@@ -30,7 +34,7 @@ export class Entity {
 
   addComponents<T extends Structure>(
     ...componentValuePairs: NonEmptyArray<
-      [component: StructureOfArrays<T>, value: MapStructureToPrimitive<T>]
+      [component: StructureOfArrays<T>, value: MapTypesOfStructureToPrimitives<T>]
     >
   ): void {
     this.world.addComponents(this.id, ...componentValuePairs)
