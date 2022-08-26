@@ -1,8 +1,8 @@
 import { go, assert, NonEmptyArray } from '@blackglory/prelude'
 import { Emitter } from '@blackglory/structures'
 import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
-import { map, includes, filter } from 'iterable-operator'
-import { Component } from './component'
+import { map, each, includes, filter } from 'iterable-operator'
+import { Component, ComponentId } from './component'
 import { ComponentRegistry } from './component-registry'
 import {
   Archetype
@@ -46,16 +46,14 @@ export class World extends Emitter<{
 
     // 创建或获取符合entity新形状的archetype.
     const archetype: Archetype = go(() => {
-      const componentSet = new Set(
-        map(
-          componentValuePairs
-        , ([component]) => component
-        )
-      )
       const oldArchetype = this._entityArchetypeRegistry.getArchetype(entityId)
       if (oldArchetype) {
         // entity已经有一个archetype, 意味着该entity不是第一次增减component
 
+        const componentSet = new Set(map(
+          componentValuePairs
+        , ([component]) => component
+        ))
         if (includes(oldArchetype.hasComponents(componentSet), false)) {
           // 并非所有新component已经在archtype里, 需要变更enttiy对应的archetype
 
@@ -71,10 +69,7 @@ export class World extends Emitter<{
             if (achetype) {
               return achetype
             } else {
-              const newArchetype = new Archetype(this, newComponentSet)
-              this._archetypeRegistry.addArchetype(newArchetype)
-              this.emit('newArchetypeAdded', newArchetype)
-              return newArchetype
+              return new Archetype(this, newComponentSet)
             }
           })
           archetype.addEntity(entityId)
@@ -91,17 +86,19 @@ export class World extends Emitter<{
         // entity还没有archetype, 意味着该entity是第一次增减component
 
         const archetype = go(() => {
-          const archetypeId = computeArchetypeId(
-            new Set(map(componentSet, component => component.id))
-          )
-          const archetype = this._archetypeRegistry.getArchtype(archetypeId)
+          const componentSet: Set<Component> = new Set()
+          const componentIdSet: Set<ComponentId> = new Set()
+          each(componentValuePairs, ([component]) => {
+            componentSet.add(component)
+            componentIdSet.add(component.id)
+          })
+
+          const newArchetypeId = computeArchetypeId(componentIdSet)
+          const archetype = this._archetypeRegistry.getArchtype(newArchetypeId)
           if (archetype) {
             return archetype
           } else {
-            const newArchetype = new Archetype(this, componentSet)
-            this._archetypeRegistry.addArchetype(newArchetype)
-            this.emit('newArchetypeAdded', newArchetype)
-            return newArchetype
+            return new Archetype(this, componentSet)
           }
         })
         archetype.addEntity(entityId)
@@ -152,10 +149,7 @@ export class World extends Emitter<{
             if (archetype) {
               return archetype
             } else {
-              const newArchetype = new Archetype(this, newComponentSet)
-              this._archetypeRegistry.addArchetype(newArchetype)
-              this.emit('newArchetypeAdded', newArchetype)
-              return newArchetype
+              return new Archetype(this, newComponentSet)
             }
           })
           newArchetype.addEntity(entityId)
@@ -177,10 +171,7 @@ export class World extends Emitter<{
           if (newArchetype) {
             return newArchetype
           } else {
-            const newArchetype = new Archetype(this, new Set())
-            this._archetypeRegistry.addArchetype(newArchetype)
-            this.emit('newArchetypeAdded', newArchetype)
-            return newArchetype
+            return new Archetype(this, new Set())
           }
         })
         newArchetype.addEntity(entityId)

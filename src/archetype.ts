@@ -1,4 +1,4 @@
-import { map, first } from 'iterable-operator'
+import { map, first, reduce } from 'iterable-operator'
 import { StructureOfSparseMaps } from 'structure-of-arrays'
 import { Component, ComponentId } from './component'
 import { EntityId } from './entity-id'
@@ -21,7 +21,7 @@ export class Archetype {
   private entityIdSet: Set<EntityId> = new Set()
 
   constructor(
-    private world: World
+    world: World
   , private componentSet: Set<Component>
   ) {
     for (const component of componentSet) {
@@ -34,7 +34,10 @@ export class Archetype {
     const componentIdSet = new Set(
       map(componentSet, component => component.id)
     )
+
     this.id = computeArchetypeId(componentIdSet)
+    world._archetypeRegistry.addArchetype(this)
+    world.emit('newArchetypeAdded', this)
   }
 
   getAllComponents(): Iterable<Component> {
@@ -81,8 +84,10 @@ export class Archetype {
   }
 }
 
-export function computeArchetypeId(componentIdSet: Set<ComponentId>): ArchetypeId {
-  return [...componentIdSet].reduce((acc, cur) => acc + cur, 0n)
+export function computeArchetypeId(
+  componentIdSet: Set<ComponentId>
+): ArchetypeId {
+  return reduce(componentIdSet, (acc, cur) => acc + cur, 0n)
 }
 
 export function copyEntityData(

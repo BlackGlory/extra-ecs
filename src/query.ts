@@ -1,5 +1,5 @@
 import { toArray, some, filter, every, drop, count } from 'iterable-operator'
-import { assert, log } from '@blackglory/prelude'
+import { assert } from '@blackglory/prelude'
 import { World } from './world'
 import { EntityId } from './entity-id'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
@@ -9,24 +9,26 @@ import { Archetype } from './archetype'
 export class Query {
   private isAvailable: boolean = true
   private relatedArchetypeSet: Set<Archetype> = new Set()
-  private removeNewArchetypeAddedListener = this.world.on(
-    'newArchetypeAdded'
-  , (archetype: Archetype): void => {
-      if (isArchetypeMatch(archetype, this.pattern)) {
-        this.relatedArchetypeSet.add(archetype)
-      }
-    }
-  )
+  private removeNewArchetypeAddedListener: () => void
 
   constructor(
-    private readonly world: World
-  , private readonly pattern: Pattern
+    world: World
+  , pattern: Pattern
   ) {
     for (const archetype of world._archetypeRegistry.getAllArchtypes()) {
       if (isArchetypeMatch(archetype, pattern)) {
         this.relatedArchetypeSet.add(archetype)
       }
     }
+
+    this.removeNewArchetypeAddedListener = world.on(
+      'newArchetypeAdded'
+    , (archetype: Archetype): void => {
+        if (isArchetypeMatch(archetype, pattern)) {
+          this.relatedArchetypeSet.add(archetype)
+        }
+      }
+    )
   }
 
   destroy(): void {
