@@ -2,7 +2,7 @@ import { some, filter, every, drop, count } from 'iterable-operator'
 import { World } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
-import { Component, ComponentId } from './component'
+import { Component } from './component'
 
 export class Query {
   private isAvailable: boolean = true
@@ -12,12 +12,12 @@ export class Query {
   private sortedEntityIds: number[] = []
   private entityIdsAdded: boolean = false
   private entityIdsDeleted: boolean = false
-  private relatedComponentIds: Set<ComponentId> = new Set()
+  private relatedComponentSet: Set<Component> = new Set()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
-  , (entityId: number, componentIds: ComponentId[]): void => {
-      const isRelated = componentIds.some(componentId => {
-        return this.isComponentIdRelated(componentId)
+  , (entityId: number, components: Component[]): void => {
+      const isRelated = components.some(component => {
+        return this.isComponentRelated(component)
       })
       if (isRelated) {
         if (this.entityIds.has(entityId)) {
@@ -46,8 +46,7 @@ export class Query {
   ) {
     // init `this.relatedComponents`
     for (const component of this.extractComponents(pattern)) {
-      const componentId = this.world.componentRegistry.getComponentId(component)
-      this.relatedComponentIds.add(componentId)
+      this.relatedComponentSet.add(component)
     }
 
     // init `this.entitiyIds`
@@ -102,8 +101,8 @@ export class Query {
     }
   }
 
-  private isComponentIdRelated(componentId: ComponentId): boolean {
-    return this.relatedComponentIds.has(componentId)
+  private isComponentRelated(component: Component): boolean {
+    return this.relatedComponentSet.has(component)
   }
 
   private isMatch(entityId: number, pattern: Pattern = this.pattern): boolean {
