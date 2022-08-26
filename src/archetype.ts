@@ -80,7 +80,7 @@ export class Archetype {
   }
 
   getStorage(component: Component): StructureOfSparseMaps<any> | undefined {
-    return this.componentIdToStorage.get(component.id)!
+    return this.componentIdToStorage.get(component.id)
   }
 }
 

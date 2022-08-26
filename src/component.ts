@@ -41,9 +41,7 @@ export class Component<T extends Structure = any> {
     const archetype = this.world._entityArchetypeRegistry.getArchetype(entityId)
     if (archetype) {
       const storage = archetype.getStorage(this)
-      if (storage) {
-        storage.update(entityId, key, value as any)
-      }
+      storage?.update(entityId, key, value as any)
     }
   }
 }
