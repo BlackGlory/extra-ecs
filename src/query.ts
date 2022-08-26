@@ -16,7 +16,9 @@ export class Query {
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
   , (entityId: number, componentIds: ComponentId[]): void => {
-      const isRelated = componentIds.some(componentId => this.isComponentIdRelated(componentId))
+      const isRelated = componentIds.some(componentId => {
+        return this.isComponentIdRelated(componentId)
+      })
       if (isRelated) {
         if (this.entityIds.has(entityId)) {
           if (!this.isMatch(entityId)) {
@@ -44,7 +46,8 @@ export class Query {
   ) {
     // init `this.relatedComponents`
     for (const component of this.extractComponents(pattern)) {
-      this.relatedComponentIds.add(this.world.componentRegistry.getComponentId(component))
+      const componentId = this.world.componentRegistry.getComponentId(component)
+      this.relatedComponentIds.add(componentId)
     }
 
     // init `this.entitiyIds`

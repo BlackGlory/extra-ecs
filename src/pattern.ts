@@ -23,7 +23,6 @@ type AllOf = [Operator.AllOf, ...Pattern[]]
 type AnyOf = [Operator.AnyOf, ...Pattern[]]
 type OneOf = [Operator.OneOf, ...Pattern[]]
 
-
 /**
  * `not(pattern1, pattern2) = not(anyOf(pattern1, pattern2))`
  */
