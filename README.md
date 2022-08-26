@@ -43,8 +43,16 @@ const movableQuery = new Query(world, allOf(Position, Velocity))
 
 function movementSystem(deltaTime: number): void {
   for (const entityId of movableQuery.findAllEntityId()) {
-    Position.arrays.x[entityId] += Velocity.arrays.x[entityId] * deltaTime
-    Position.arrays.y[entityId] += Velocity.arrays.y[entityId] * deltaTime
+    Position.setValue(
+      entityId
+    , 'x'
+    , Position.getValue(entityId, 'x') + Velocity.getValue(entityId, 'x') * deltaTime
+    )
+    Position.setValue(
+      entityId
+    , 'y 
+    , Position.getValue(entityId, 'y') + Velocity.getValue(entityId, 'y') * deltaTime
+    )
   }
 }
 
@@ -74,11 +82,21 @@ class World {
 ### Component
 ```ts
 class Component<T extends Structure = any> {
-  readonly arrays: MapTypesOfStructureToInternalArrays<T>
   readonly id: ComponentId
   readonly structure?: T
 
   constructor(world: World, structure?: T)
+
+  getValue<U extends keyof T>(
+    entityId: number
+  , key: U
+  ): MapTypesOfStructureToPrimitives<T>[U] | undefined
+
+  setValue<U extends keyof T>(
+    entityId: number
+  , key: U
+  , value: MapTypesOfStructureToPrimitives<T>[U]
+  ): void
 }
 ```
 
