@@ -98,7 +98,7 @@ export function copyEntityData(
   for (const component of target.getAllComponents()) {
     const targetStorage = target.getStorage(component)
     if (targetStorage) {
-      // 如果entity在存在archetype里存在, 则必将分配到一个internal
+      // 如果entity在archetype里存在, 则必将分配到一个internalIndex
       const targetIndex = targetStorage.getInternalIndex(entityId)!
 
       const sourceStorage = source.getStorage(component)
