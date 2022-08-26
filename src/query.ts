@@ -1,6 +1,5 @@
 import { some, map, filter, every, drop, count } from 'iterable-operator'
 import { World } from './world'
-import { Entity } from './entity'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
 import { Component, ComponentId } from './component'
@@ -57,12 +56,6 @@ export class Query {
     }
 
     this.sortedEntityIds.sort()
-  }
-
-  findAllEntities(): Iterable<Entity> {
-    assert(this.isAvailable, 'The query is not available')
-
-    return map(this.findAllEntityIds(), id => new Entity(this.world, id))
   }
 
   findAllEntityIds(): Iterable<number> {

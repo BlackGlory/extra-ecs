@@ -132,7 +132,10 @@ export class World extends Emitter<{
 
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<Component<T>>
+  , ...components: NonEmptyArray<
+    | Component<T>
+    | symbol
+    >
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
