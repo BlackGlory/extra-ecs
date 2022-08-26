@@ -36,19 +36,15 @@ export class Query {
     this.removeNewArchetypeAddedListener()
   }
 
-  findAllEntityIds(): Iterable<[archtype: Archetype, entityId: EntityId]> {
+  findAllEntityIds(): Iterable<EntityId> {
     assert(this.isAvailable, 'The query is not available')
 
     return this._findAllEntityIds()
   }
 
-  private * _findAllEntityIds(): Iterable<
-    [archtype: Archetype, entityId: EntityId]
-  > {
+  private * _findAllEntityIds(): Iterable<EntityId> {
     for (const archtype of this.relatedArchetypeSet) {
-      for (const entityId of archtype.getEntityIdsForStorageTraversal()) {
-        yield [archtype, entityId]
-      }
+      yield* archtype.getEntityIdsForStorageTraversal()
     }
   }
 }

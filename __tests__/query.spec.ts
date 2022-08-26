@@ -20,10 +20,9 @@ describe('Query', () => {
     const result = query.findAllEntityIds()
     const arr = toArray(result)
 
-    const archetype = world._archetypeRegistry.getArchtype(component1.id)
     expect(result).toBeIterable()
     expect(arr).toHaveLength(1)
-    expect(arr).toStrictEqual([[archetype, entityId1]])
+    expect(arr).toStrictEqual([entityId1])
   })
 
   test('destroy', () => {
@@ -51,9 +50,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype = world._archetypeRegistry.getArchtype(component2.id)
       expect(arr).toHaveLength(1)
-      expect(arr).toStrictEqual([[archetype, entityId2]])
+      expect(arr).toStrictEqual([entityId2])
     })
 
     test('allOf', () => {
@@ -72,11 +70,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype = world._archetypeRegistry.getArchtype(
-        component1.id + component2.id
-      )
       expect(arr).toHaveLength(1)
-      expect(arr).toStrictEqual([[archetype, entityId3]])
+      expect(arr).toStrictEqual([entityId3])
     })
 
     test('anyOf', () => {
@@ -95,17 +90,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype1 = world._archetypeRegistry.getArchtype(component1.id)
-      const archetype2 = world._archetypeRegistry.getArchtype(component2.id)
-      const archetype3 = world._archetypeRegistry.getArchtype(
-        component1.id + component2.id
-      )
       expect(arr).toHaveLength(3)
-      expect(arr).toStrictEqual([
-        [archetype1, entityId1]
-      , [archetype2, entityId2]
-      , [archetype3, entityId3]
-      ])
+      expect(arr).toStrictEqual([entityId1, entityId2, entityId3])
     })
 
     test('oneOf', () => {
@@ -124,13 +110,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype1 = world._archetypeRegistry.getArchtype(component1.id)
-      const archetype2 = world._archetypeRegistry.getArchtype(component2.id)
       expect(arr).toHaveLength(2)
-      expect(arr).toStrictEqual([
-        [archetype1, entityId1]
-      , [archetype2, entityId2]
-      ])
+      expect(arr).toStrictEqual([entityId1, entityId2])
     })
 
     test('and', () => {
@@ -149,11 +130,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype = world._archetypeRegistry.getArchtype(
-        component1.id + component2.id
-      )
       expect(arr).toHaveLength(1)
-      expect(arr).toStrictEqual([[archetype, entityId3]])
+      expect(arr).toStrictEqual([entityId3])
     })
 
     test('or', () => {
@@ -172,17 +150,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype1 = world._archetypeRegistry.getArchtype(component1.id)
-      const archetype2 = world._archetypeRegistry.getArchtype(component2.id)
-      const archetype3 = world._archetypeRegistry.getArchtype(
-        component1.id + component2.id
-      )
       expect(arr).toHaveLength(3)
-      expect(arr).toStrictEqual([
-        [archetype1, entityId1]
-      , [archetype2, entityId2]
-      , [archetype3, entityId3]
-      ])
+      expect(arr).toStrictEqual([entityId1, entityId2, entityId3])
     })
 
     test('xor', () => {
@@ -201,13 +170,8 @@ describe('Query', () => {
       const result = query.findAllEntityIds()
       const arr = toArray(result)
 
-      const archetype1 = world._archetypeRegistry.getArchtype(component1.id)
-      const archetype2 = world._archetypeRegistry.getArchtype(component2.id)
       expect(arr).toHaveLength(2)
-      expect(arr).toStrictEqual([
-        [archetype1, entityId1]
-      , [archetype2, entityId2]
-      ])
+      expect(arr).toStrictEqual([entityId1, entityId2])
     })
   })
 })
