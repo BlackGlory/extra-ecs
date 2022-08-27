@@ -11,7 +11,7 @@ yarn add extra-ecs
 ## Usage
 ```ts
 import { StructureOfArrays, double } from 'structure-of-arrays'
-import { World, Query, Entity, allOf } from 'extra-ecs'
+import { World, Query, allOf } from 'extra-ecs'
 
 const Enabled = Symbol()
 const Position = new StructureOfArrays({
