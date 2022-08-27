@@ -26,9 +26,7 @@ function runBench(fn: (count: number) => () => void, count: number): void {
     frames++
     endTime = process.hrtime.bigint()
   }
-  const elapsedMs = Number(endTime - startTime) / 1000 / 1000
-  const framePerSecond = Math.floor(
-    frames / (elapsedMs / 1000)
-  )
-  console.log(`${fn.name}: ${framePerSecond} fps`)
+  const elapsedSeconds = Number(endTime - startTime) / 1000 / 1000 / 1000
+  const framesPerSecond = Math.floor(frames / elapsedSeconds)
+  console.log(`${fn.name}: ${framesPerSecond} fps`)
 }
