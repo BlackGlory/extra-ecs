@@ -1,10 +1,4 @@
-import {
-  go
-, assert
-, NonEmptyArray
-, isUndefined
-, isSymbol
-} from '@blackglory/prelude'
+import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
 import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
@@ -84,17 +78,7 @@ export class World extends Emitter<{
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = go(() => {
-      const componentSet = this.entityIdToComponentSet.get(entityId)
-      if (componentSet) {
-        return componentSet
-      } else {
-        const componentSet: Set<Component> = new Set()
-        this.entityIdToComponentSet.set(entityId, componentSet)
-        return componentSet
-      }
-    })
-
+    const componentSet = this.getComponentSet(entityId)
     const newAddedComponents: Component[] = []
     componentValuePairs.forEach(([component, value]) => {
       if (isSymbol(component)) {
@@ -134,6 +118,17 @@ export class World extends Emitter<{
       if (removedComponents.length) {
         this.emit('entityComponentsChanged', entityId, components)
       }
+    }
+  }
+
+  private getComponentSet(entityId: number): Set<Component> {
+    const componentSet = this.entityIdToComponentSet.get(entityId)
+    if (componentSet) {
+      return componentSet
+    } else {
+      const componentSet: Set<Component> = new Set()
+      this.entityIdToComponentSet.set(entityId, componentSet)
+      return componentSet
     }
   }
 }
