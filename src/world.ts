@@ -60,9 +60,7 @@ export class World extends Emitter<{
 
     const componentSet = this.entityIdToComponentSet.get(entityId)
     if (componentSet) {
-      const results = components.map(component => {
-        return componentSet.has(component)
-      })
+      const results = components.map(component => componentSet.has(component))
       return results as MapProps<T, boolean>
     } else {
       return new Array(components.length).fill(false) as MapProps<T, boolean>
@@ -98,9 +96,7 @@ export class World extends Emitter<{
     })
 
     const newAddedComponents: Component[] = []
-    for (const componentValuePair of componentValuePairs) {
-      const [component, value] = componentValuePair
-
+    componentValuePairs.forEach(([component, value]) => {
       if (isSymbol(component)) {
         componentSet.add(component)
         newAddedComponents.push(component)
@@ -113,7 +109,7 @@ export class World extends Emitter<{
           newAddedComponents.push(component)
         }
       }
-    }
+    })
 
     if (newAddedComponents.length > 0) {
       this.emit('entityComponentsChanged', entityId, newAddedComponents)
@@ -129,11 +125,11 @@ export class World extends Emitter<{
     const componentSet = this.entityIdToComponentSet.get(entityId)
     if (componentSet) {
       const removedComponents: Component[] = []
-      for (const component of components) {
+      components.forEach(component => {
         if (componentSet.delete(component)) {
           removedComponents.push(component)
         }
-      }
+      })
 
       if (removedComponents.length) {
         this.emit('entityComponentsChanged', entityId, components)
