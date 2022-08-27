@@ -106,7 +106,7 @@ export class World extends Emitter<{
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this.entityIdToComponentSet.get(entityId)
+    const componentSet = this.getComponentSet(entityId)
     if (componentSet) {
       const removedComponents: Component[] = []
       components.forEach(component => {
