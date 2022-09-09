@@ -2474,6 +2474,13 @@ extglob@^2.0.4:
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
 
+extra-benchmark@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/extra-benchmark/-/extra-benchmark-0.1.0.tgz#69ac46af0e6a2bab942d82176426da7677c1d318"
+  integrity sha512-pxjC2dWwVmbLRKyKRhiPQMnLKK8KeFm9DUmwIb0chx6bcuVywalvez52/L4im/KeCCWVkCuBJetLJXIfqY0tbg==
+  dependencies:
+    "@blackglory/prelude" "^0.1.4"
+
 extra-filesystem@^0.4.2:
   version "0.4.5"
   resolved "https://registry.yarnpkg.com/extra-filesystem/-/extra-filesystem-0.4.5.tgz#179c74b72cf3a964d926007cf1ed094550b7d10f"
