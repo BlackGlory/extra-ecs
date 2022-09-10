@@ -3,6 +3,7 @@ import { World } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
 import { Component } from './component'
+import { sortNumbersAscending } from 'extra-sort'
 
 export class Query {
   private isAvailable: boolean = true
@@ -57,18 +58,22 @@ export class Query {
       }
     }
 
-    this.sortedEntityIds.sort()
+    sortNumbersAscending(this.sortedEntityIds)
   }
 
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
     if (this.entityIdsDeleted) {
-      this.sortedEntityIds = [...this.entityIds].sort()
+      const sortedEntityIds = [...this.entityIds]
+      sortNumbersAscending(sortedEntityIds)
+      this.sortedEntityIds = sortedEntityIds
+
       this.entityIdsDeleted = false
       this.entityIdsAdded = false
     } else if (this.entityIdsAdded) {
-      this.sortedEntityIds.sort()
+      sortNumbersAscending(this.sortedEntityIds)
+
       this.entityIdsAdded = false
     }
 
