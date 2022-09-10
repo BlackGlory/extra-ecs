@@ -8,7 +8,7 @@ import { Benchmark } from 'extra-benchmark'
 
 const benchmark = new Benchmark('extra-ecs', {
   warmUps: 1000
-, runs: 5000
+, runs: 10000
 })
 
 benchmark.addCase('packed_5', () => {
