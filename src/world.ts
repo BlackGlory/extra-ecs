@@ -1,5 +1,5 @@
 import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
-import { MapProps } from 'hotypes'
+import { MapAllProps } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
 import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
 import { toArray, first } from 'iterable-operator'
@@ -49,15 +49,15 @@ export class World extends Emitter<{
   componentsExist<T extends NonEmptyArray<Component>>(
     entityId: number
   , ...components: T
-  ): MapProps<T, boolean> {
+  ): MapAllProps<T, boolean> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
     const componentSet = this.entityIdToComponentSet.get(entityId)
     if (componentSet) {
       const results = components.map(component => componentSet.has(component))
-      return results as MapProps<T, boolean>
+      return results as MapAllProps<T, boolean>
     } else {
-      return new Array(components.length).fill(false) as MapProps<T, boolean>
+      return new Array(components.length).fill(false) as MapAllProps<T, boolean>
     }
   }
 
