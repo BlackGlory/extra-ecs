@@ -24,6 +24,62 @@ describe('Query', () => {
     expect(arr).toStrictEqual([entityId1])
   })
 
+  describe('entityComponentsChanged event', () => {
+    describe('add entityIds', () => {
+      test('entityId exists', () => {
+        const world = new World()
+        const component = Symbol()
+        const entityId = world.createEntityId()
+        world.addComponents(entityId, [component])
+        const query = new Query(world, component)
+        world.addComponents(entityId, [component])
+
+        const result = toArray(query.findAllEntityIds())
+
+        expect(result).toStrictEqual([entityId])
+      })
+
+      test('entityId does not exist', () => {
+        const world = new World()
+        const component = Symbol()
+        const entityId = world.createEntityId()
+        const query = new Query(world, component)
+        world.addComponents(entityId, [component])
+
+        const result = toArray(query.findAllEntityIds())
+
+        expect(result).toStrictEqual([entityId])
+      })
+    })
+
+    describe('remove entityIds', () => {
+      test('entityId exists', () => {
+        const world = new World()
+        const component = Symbol()
+        const entityId = world.createEntityId()
+        world.addComponents(entityId, [component])
+        const query = new Query(world, component)
+        world.removeComponents(entityId, component)
+
+        const result = toArray(query.findAllEntityIds())
+
+        expect(result).toStrictEqual([])
+      })
+
+      test('entityId does not exist', () => {
+        const world = new World()
+        const component = Symbol()
+        const entityId = world.createEntityId()
+        const query = new Query(world, component)
+        world.removeComponents(entityId, component)
+
+        const result = toArray(query.findAllEntityIds())
+
+        expect(result).toStrictEqual([])
+      })
+    })
+  })
+
   test('destroy', () => {
     const world = new World()
     const component = Symbol()
