@@ -25,7 +25,34 @@ describe('Query', () => {
   })
 
   describe('entityComponentsChanged event', () => {
-    describe('add entityIds', () => {
+    describe('remove entity', () => {
+      test('entityId exists', () => {
+        const world = new World()
+        const component = Symbol()
+        const entityId = world.createEntityId()
+        world.addComponents(entityId, [component])
+        const query = new Query(world, component)
+        world.removeEntityId(entityId)
+
+        const result = toArray(query.findAllEntityIds())
+
+        expect(result).toStrictEqual([])
+      })
+
+      test('entityId does not exist', () => {
+        const world = new World()
+        const component = Symbol()
+        const entityId = world.createEntityId()
+        const query = new Query(world, component)
+        world.removeEntityId(entityId)
+
+        const result = toArray(query.findAllEntityIds())
+
+        expect(result).toStrictEqual([])
+      })
+    })
+
+    describe('add entity components', () => {
       test('entityId exists', () => {
         const world = new World()
         const component = Symbol()
@@ -52,7 +79,7 @@ describe('Query', () => {
       })
     })
 
-    describe('remove entityIds', () => {
+    describe('remove entity components', () => {
       test('entityId exists', () => {
         const world = new World()
         const component = Symbol()

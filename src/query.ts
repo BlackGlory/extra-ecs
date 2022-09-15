@@ -14,6 +14,15 @@ export class Query {
   private entityIdsAdded: boolean = false
   private entityIdsDeleted: boolean = false
   private relatedComponentSet: Set<Component> = new Set()
+  private removeEntityRemovedListener = this.world.on(
+    'entityRemoved'
+  , (entityId: number) => {
+      if (this.entityIds.has(entityId)) {
+        this.entityIds.delete(entityId)
+        this.entityIdsDeleted = true
+      }
+    }
+  )
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
   , (entityId: number, changedComponents: Component[]): void => {
@@ -148,5 +157,6 @@ export class Query {
   destroy(): void {
     this.isAvailable = false
     this.removeEntityComponentsChangedListener()
+    this.removeEntityRemovedListener()
   }
 }

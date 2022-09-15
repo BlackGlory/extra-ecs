@@ -9,6 +9,7 @@ import { Component } from './component'
  * 世界的本质是一个内存数据库管理系统.
  */
 export class World extends Emitter<{
+  entityRemoved: [entityId: number]
   entityComponentsChanged: [entityId: number, changedComponents: Component[]]
 }> {
   private nextEntityId: number = 0
@@ -44,6 +45,7 @@ export class World extends Emitter<{
   removeEntityId(entityId: number): void {
     this.entityIdToComponentSet.delete(entityId)
     this.deletedEntityIds.add(entityId)
+    this.emit('entityRemoved', entityId)
   }
 
   componentsExist<T extends NonEmptyArray<Component>>(
