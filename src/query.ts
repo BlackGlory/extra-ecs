@@ -16,11 +16,11 @@ export class Query {
   private relatedComponentSet: Set<Component> = new Set()
   private removeEntityComponentsChangedListener = this.world.on(
     'entityComponentsChanged'
-  , (entityId: number, components: Component[]): void => {
-      const isRelated = components.some(component => {
+  , (entityId: number, changedComponents: Component[]): void => {
+      const isChangedComponentsRelated = changedComponents.some(component => {
         return this.isComponentRelated(component)
       })
-      if (isRelated) {
+      if (isChangedComponentsRelated) {
         if (this.entityIds.has(entityId)) {
           if (!this.isMatch(entityId)) {
             this.entityIds.delete(entityId)

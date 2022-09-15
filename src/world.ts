@@ -9,7 +9,7 @@ import { Component } from './component'
  * 世界的本质是一个内存数据库管理系统.
  */
 export class World extends Emitter<{
-  entityComponentsChanged: [entityId: number, components: Component[]]
+  entityComponentsChanged: [entityId: number, changedComponents: Component[]]
 }> {
   private nextEntityId: number = 0
   private deletedEntityIds: Set<number> = new Set()
