@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/BlackGlory/extra-ecs/compare/v0.2.3...v0.2.4) (2022-09-15)
+
+
+### Features
+
+* improve types ([e3c85b8](https://github.com/BlackGlory/extra-ecs/commit/e3c85b880819d376772025f09ef91012cdc8a175))
+
+
+### Bug Fixes
+
+* **query:** handle entity removed event ([0a994be](https://github.com/BlackGlory/extra-ecs/commit/0a994be550dbbae58021842fbb141a3306fa5899))
+
 ### [0.2.3](https://github.com/BlackGlory/extra-ecs/compare/v0.2.2...v0.2.3) (2022-09-10)
 
 ### [0.2.2](https://github.com/BlackGlory/extra-ecs/compare/v0.2.1...v0.2.2) (2022-08-27)
