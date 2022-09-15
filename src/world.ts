@@ -1,9 +1,16 @@
 import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
-import { MapAllProps } from 'hotypes'
+import { MapAllProps, Equals } from 'hotypes'
 import { Emitter } from '@blackglory/structures'
 import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
 import { toArray, first } from 'iterable-operator'
 import { Component } from './component'
+
+type MapComponentsToComponentValuePairs<T extends Array<Structure>> = {
+  [Index in keyof T]:
+    Equals<T[Index], {}> extends true
+    ? [component: Component<T[Index]>]
+    : [component: Component<T[Index]>, value?: MapTypesOfStructureToPrimitives<T[Index]>]
+}
 
 /**
  * 世界的本质是一个内存数据库管理系统.
@@ -72,11 +79,9 @@ export class World extends Emitter<{
          : []
   }
 
-  addComponents<T extends Structure>(
+  addComponents<T extends NonEmptyArray<Structure>>(
     entityId: number
-  , ...componentValuePairs: NonEmptyArray<
-      [component: Component<T>, value?: MapTypesOfStructureToPrimitives<T>]
-    >
+  , ...componentValuePairs: MapComponentsToComponentValuePairs<T>
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 

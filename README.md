@@ -60,6 +60,13 @@ type Component<T extends Structure = any> =
 
 ### World
 ```ts
+type MapComponentsToComponentValuePairs<T extends Array<Structure>> = {
+  [Index in keyof T]:
+    Equals<T[Index], {}> extends true
+    ? [component: Component<T[Index]>]
+    : [component: Component<T[Index]>, value?: MapTypesOfStructureToPrimitives<T[Index]>]
+}
+
 class World {
   getAllEntityIds(): Iterable<number>
   createEntityId(): number
@@ -71,11 +78,9 @@ class World {
   , ...components: T
   ): MapProps<T, boolean>
   getComponents(entityId: number): Iterable<Component>
-  addComponents<T extends Structure>(
+  addComponents<T extends NonEmptyArray<Structure>>(
     entityId: number
-  , ...componentValuePairs: NonEmptyArray<
-      [component: Component<T>, value?: MapTypesOfStructureToPrimitives<T>]
-    >
+  , ...componentValuePairs: MapComponentsToComponentValuePairs<T>
   ): void
   removeComponents<T extends Structure>(
     entityId: number

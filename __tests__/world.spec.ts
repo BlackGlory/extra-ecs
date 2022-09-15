@@ -101,6 +101,26 @@ describe('World', () => {
   })
 
   describe('addComponents', () => {
+    test('multiple components', () => {
+      const world = new World()
+      const component1 = new StructureOfArrays({ x: int8 })
+      const component2 = new StructureOfArrays({ y: int8 })
+      const entityId = world.createEntityId()
+
+      world.addComponents(
+        entityId
+      , [component1, { x: 1 }]
+      , [component2, { y: 2 }]
+      )
+
+      expect(world.componentsExist(entityId, component1)[0]).toStrictEqual(true)
+      expect(component1.arrays.x.length).toBe(1)
+      expect(component1.arrays.x[entityId]).toBe(1)
+      expect(world.componentsExist(entityId, component2)[0]).toStrictEqual(true)
+      expect(component2.arrays.y.length).toBe(1)
+      expect(component2.arrays.y[entityId]).toBe(2)
+    })
+
     test('with value', () => {
       const world = new World()
       const component = new StructureOfArrays({ value: int8 })
