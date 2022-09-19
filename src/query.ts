@@ -89,6 +89,10 @@ export class Query {
     return this.sortedEntityIds
   }
 
+  hasEntityId(entityId: number): boolean {
+    return this.entityIds.has(entityId)
+  }
+
   private * extractComponents(pattern: Pattern): IterableIterator<Component> {
     if (isExpression(pattern)) {
       if (isNot(pattern)) {
