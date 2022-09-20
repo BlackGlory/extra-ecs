@@ -2,12 +2,13 @@ import { some, filter, every, drop, count } from 'iterable-operator'
 import { World } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
+import { BitSet } from '@blackglory/structures'
 import { Component } from './component'
 import { sortNumbersAscending } from 'extra-sort'
 
 export class Query {
   private isAvailable: boolean = true
-  private entityIds: Set<number> = new Set()
+  private entityIds: BitSet = new BitSet(256)
   // 经过升序排序的entityIds可以大幅增加访问性能,
   // 因为这更符合内存顺序访问的顺序, 同时在分支预测方面也更有利.
   private sortedEntityIds: number[] = []

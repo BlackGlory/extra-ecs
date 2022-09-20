@@ -1,7 +1,7 @@
 import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapAllProps, Equals } from 'hotypes'
 import { Falsy } from 'justypes'
-import { Emitter } from '@blackglory/structures'
+import { Emitter, BitSet } from '@blackglory/structures'
 import {
   StructureOfArrays
 , Structure
@@ -33,7 +33,7 @@ export class World extends Emitter<{
   entityComponentsChanged: [entityId: number, changedComponents: Component[]]
 }> {
   private nextEntityId: number = 0
-  private deletedEntityIds: Set<number> = new Set()
+  private deletedEntityIds: BitSet = new BitSet(256)
   private entityIdToComponentSet: Map<number, Set<Component>> = new Map()
 
   ;* getAllEntityIds(): Iterable<number> {
