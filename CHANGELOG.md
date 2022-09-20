@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.6](https://github.com/BlackGlory/extra-ecs/compare/v0.2.5...v0.2.6) (2022-09-20)
+
+
+### Features
+
+* add Falsy supports ([e6deba1](https://github.com/BlackGlory/extra-ecs/commit/e6deba1ed9fd9f819de3d2c0921277e801824115))
+* improve behaviors of `removeEntityId` ([a305995](https://github.com/BlackGlory/extra-ecs/commit/a30599560c54b6435294bdc09da0a0f06a3ebc43))
+
 ### [0.2.5](https://github.com/BlackGlory/extra-ecs/compare/v0.2.4...v0.2.5) (2022-09-19)
 
 
