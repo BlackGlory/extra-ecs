@@ -59,7 +59,7 @@
     "rollup-plugin-analyzer": "^4.0.0",
     "rollup-plugin-terser": "^7.0.2",
     "standard-version": "^9.5.0",
-    "structure-of-arrays": "^0.5.5",
+    "structure-of-arrays": "^0.5.6",
     "ts-jest": "^27.1.4",
     "tscpaths": "^0.0.9",
     "tslib": "^2.3.1",
@@ -67,13 +67,13 @@
   },
   "dependencies": {
     "@blackglory/prelude": "^0.1.5",
-    "@blackglory/structures": "^0.10.14",
+    "@blackglory/structures": "^0.10.18",
     "extra-sort": "^0.1.1",
     "hotypes": "^0.5.0",
     "iterable-operator": "^1.2.1",
     "justypes": "^3.0.0"
   },
   "peerDependencies": {
-    "structure-of-arrays": "^0.5.4"
+    "structure-of-arrays": "^0.5.6"
   }
 }
