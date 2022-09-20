@@ -105,12 +105,15 @@ describe('World', () => {
       const world = new World()
       const component1 = new StructureOfArrays({ x: int8 })
       const component2 = new StructureOfArrays({ y: int8 })
+      const component3 = Symbol()
       const entityId = world.createEntityId()
 
       world.addComponents(
         entityId
+      , false
       , [component1, { x: 1 }]
       , [component2, { y: 2 }]
+      , [component3]
       )
 
       expect(world.componentsExist(entityId, component1)[0]).toStrictEqual(true)
@@ -119,6 +122,14 @@ describe('World', () => {
       expect(world.componentsExist(entityId, component2)[0]).toStrictEqual(true)
       expect(component2.arrays.y.length).toBe(1)
       expect(component2.arrays.y[entityId]).toBe(2)
+      expect(world.componentsExist(entityId, component3)[0]).toStrictEqual(true)
+    })
+
+    test('Falsy', () => {
+      const world = new World()
+      const entityId = world.createEntityId()
+
+      world.addComponents(entityId, false)
     })
 
     test('with value', () => {
@@ -147,6 +158,17 @@ describe('World', () => {
   })
 
   describe('removeComponents', () => {
+    test('Falsy', () => {
+      const world = new World()
+      const component = Symbol()
+      const entityId = world.createEntityId()
+      world.addComponents(entityId, [component])
+
+      world.removeComponents(entityId, false)
+
+      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
+    })
+
     test('does not exist', () => {
       const world = new World()
       const component = Symbol()

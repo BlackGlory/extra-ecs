@@ -1,15 +1,24 @@
 import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapAllProps, Equals } from 'hotypes'
+import { Falsy } from 'justypes'
 import { Emitter } from '@blackglory/structures'
 import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
 import { toArray, first } from 'iterable-operator'
 import { Component } from './component'
 
-type MapComponentsToComponentValuePairs<T extends Array<Structure>> = {
+type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
-    Equals<T[Index], {}> extends true
-    ? [component: Component<T[Index]>]
-    : [component: Component<T[Index]>, value?: MapTypesOfStructureToPrimitives<T[Index]>]
+    Array<T[Index]> extends Array<infer U> // 使T[Index]成为一个变量, 从而让TypeScript正确跟踪其类型
+    ? (
+        U extends Structure
+        ? (
+            Equals<U, {}> extends true
+            ? [component: Component<U>]
+            : [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
+          )
+        : Falsy
+      )
+    : never
 }
 
 /**
@@ -79,7 +88,7 @@ export class World extends Emitter<{
          : []
   }
 
-  addComponents<T extends NonEmptyArray<Structure>>(
+  addComponents<T extends NonEmptyArray<Structure | Falsy>>(
     entityId: number
   , ...componentValuePairs: MapComponentsToComponentValuePairs<T>
   ): void {
@@ -87,17 +96,20 @@ export class World extends Emitter<{
 
     const componentSet = this.getComponentSet(entityId)
     const newAddedComponents: Component[] = []
-    componentValuePairs.forEach(([component, value]) => {
-      if (isSymbol(component)) {
-        componentSet.add(component)
-        newAddedComponents.push(component)
-      } else {
-        if (componentSet.has(component)) {
-          component.upsert(entityId, value)
-        } else {
+    componentValuePairs.forEach(pair => {
+      if (pair) {
+        const [component, value] = pair
+        if (isSymbol(component)) {
           componentSet.add(component)
-          component.upsert(entityId, value)
           newAddedComponents.push(component)
+        } else {
+          if (componentSet.has(component)) {
+            component.upsert(entityId, value)
+          } else {
+            componentSet.add(component)
+            component.upsert(entityId, value)
+            newAddedComponents.push(component)
+          }
         }
       }
     })
@@ -109,7 +121,7 @@ export class World extends Emitter<{
 
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<Component<T>>
+  , ...components: NonEmptyArray<Component<T> | Falsy>
   ): void {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
@@ -117,13 +129,15 @@ export class World extends Emitter<{
     if (componentSet) {
       const removedComponents: Component[] = []
       components.forEach(component => {
-        if (componentSet.delete(component)) {
-          removedComponents.push(component)
+        if (component) {
+          if (componentSet.delete(component)) {
+            removedComponents.push(component)
+          }
         }
       })
 
       if (removedComponents.length) {
-        this.emit('entityComponentsChanged', entityId, components)
+        this.emit('entityComponentsChanged', entityId, removedComponents)
       }
     }
   }

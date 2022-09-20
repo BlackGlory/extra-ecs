@@ -60,11 +60,19 @@ type Component<T extends Structure = any> =
 
 ### World
 ```ts
-type MapComponentsToComponentValuePairs<T extends Array<Structure>> = {
+type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
-    Equals<T[Index], {}> extends true
-    ? [component: Component<T[Index]>]
-    : [component: Component<T[Index]>, value?: MapTypesOfStructureToPrimitives<T[Index]>]
+    Array<T[Index]> extends Array<infer U>
+    ? (
+        U extends Structure
+        ? (
+            Equals<U, {}> extends true
+            ? [component: Component<U>]
+            : [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
+          )
+        : Falsy
+      )
+    : never
 }
 
 class World {
@@ -78,13 +86,13 @@ class World {
   , ...components: T
   ): MapProps<T, boolean>
   getComponents(entityId: number): Iterable<Component>
-  addComponents<T extends NonEmptyArray<Structure>>(
+  addComponents<T extends NonEmptyArray<Structure | Falsy>>(
     entityId: number
   , ...componentValuePairs: MapComponentsToComponentValuePairs<T>
   ): void
   removeComponents<T extends Structure>(
     entityId: number
-  , ...components: NonEmptyArray<Component<T>>
+  , ...components: NonEmptyArray<Component<T> | Falsy>
   ): void
 }
 ```

@@ -70,7 +70,8 @@
     "@blackglory/structures": "^0.10.14",
     "extra-sort": "^0.1.1",
     "hotypes": "^0.5.0",
-    "iterable-operator": "^1.2.1"
+    "iterable-operator": "^1.2.1",
+    "justypes": "^3.0.0"
   },
   "peerDependencies": {
     "structure-of-arrays": "^0.5.4"
