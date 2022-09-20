@@ -2,7 +2,11 @@ import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelud
 import { MapAllProps, Equals } from 'hotypes'
 import { Falsy } from 'justypes'
 import { Emitter } from '@blackglory/structures'
-import { Structure, MapTypesOfStructureToPrimitives } from 'structure-of-arrays'
+import {
+  StructureOfArrays
+, Structure
+, MapTypesOfStructureToPrimitives
+} from 'structure-of-arrays'
 import { toArray, first } from 'iterable-operator'
 import { Component } from './component'
 
@@ -59,9 +63,21 @@ export class World extends Emitter<{
   }
 
   removeEntityId(entityId: number): void {
-    this.entityIdToComponentSet.delete(entityId)
-    this.deletedEntityIds.add(entityId)
-    this.emit('entityRemoved', entityId)
+    if (this.hasEntityId(entityId)) {
+      const componentSet = this.entityIdToComponentSet.get(entityId)
+      if (componentSet) {
+        for (const component of componentSet) {
+          if (component instanceof StructureOfArrays) {
+            component.delete(entityId)
+          }
+        }
+
+        this.entityIdToComponentSet.delete(entityId)
+      }
+
+      this.deletedEntityIds.add(entityId)
+      this.emit('entityRemoved', entityId)
+    }
   }
 
   componentsExist<T extends NonEmptyArray<Component>>(

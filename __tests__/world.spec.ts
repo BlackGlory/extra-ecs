@@ -48,6 +48,18 @@ describe('World', () => {
   })
 
   describe('removeEntityId', () => {
+    test('StructureOfArrays', () => {
+      const world = new World()
+      const component = new StructureOfArrays({ value: int8 })
+      const entityId = world.createEntityId()
+      world.addComponents(entityId, [component])
+
+      world.removeEntityId(entityId)
+
+      expect(world.hasEntityId(entityId)).toBe(false)
+      expect(component.has(entityId)).toBe(false)
+    })
+
     test('does not exist', () => {
       const world = new World()
 
@@ -116,13 +128,13 @@ describe('World', () => {
       , [component3]
       )
 
-      expect(world.componentsExist(entityId, component1)[0]).toStrictEqual(true)
+      expect(world.componentsExist(entityId, component1)[0]).toBe(true)
       expect(component1.arrays.x.length).toBe(1)
       expect(component1.arrays.x[entityId]).toBe(1)
-      expect(world.componentsExist(entityId, component2)[0]).toStrictEqual(true)
+      expect(world.componentsExist(entityId, component2)[0]).toBe(true)
       expect(component2.arrays.y.length).toBe(1)
       expect(component2.arrays.y[entityId]).toBe(2)
-      expect(world.componentsExist(entityId, component3)[0]).toStrictEqual(true)
+      expect(world.componentsExist(entityId, component3)[0]).toBe(true)
     })
 
     test('Falsy', () => {
@@ -139,7 +151,7 @@ describe('World', () => {
 
       world.addComponents(entityId, [component, { value: 1 }])
 
-      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
+      expect(world.componentsExist(entityId, component)[0]).toBe(true)
       expect(component.arrays.value.length).toBe(1)
       expect(component.arrays.value[entityId]).toBe(1)
     })
@@ -151,7 +163,7 @@ describe('World', () => {
 
       world.addComponents(entityId, [component])
 
-      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
+      expect(world.componentsExist(entityId, component)[0]).toBe(true)
       expect(component.arrays.value.length).toBe(1)
       expect(component.arrays.value[entityId]).toBe(0)
     })
@@ -166,7 +178,7 @@ describe('World', () => {
 
       world.removeComponents(entityId, false)
 
-      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(true)
+      expect(world.componentsExist(entityId, component)[0]).toBe(true)
     })
 
     test('does not exist', () => {
@@ -176,7 +188,7 @@ describe('World', () => {
 
       world.removeComponents(entityId, component)
 
-      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(false)
+      expect(world.componentsExist(entityId, component)[0]).toBe(false)
     })
 
     test('exists', () => {
@@ -187,7 +199,7 @@ describe('World', () => {
 
       world.removeComponents(entityId, component)
 
-      expect(world.componentsExist(entityId, component)[0]).toStrictEqual(false)
+      expect(world.componentsExist(entityId, component)[0]).toBe(false)
     })
   })
 
