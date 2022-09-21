@@ -8,7 +8,7 @@ import { sortNumbersAscending } from 'extra-sort'
 
 export class Query {
   private isAvailable: boolean = true
-  private entityIds: BitSet = new BitSet(256)
+  private entityIds: BitSet = new BitSet()
   // 经过升序排序的entityIds可以大幅增加访问性能,
   // 因为这更符合内存顺序访问的顺序, 同时在分支预测方面也更有利.
   private sortedEntityIds: number[] = []

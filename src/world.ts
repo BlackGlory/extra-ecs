@@ -33,7 +33,7 @@ export class World extends Emitter<{
   entityComponentsChanged: [entityId: number, changedComponents: Component[]]
 }> {
   private nextEntityId: number = 0
-  private deletedEntityIds: BitSet = new BitSet(256)
+  private deletedEntityIds: BitSet = new BitSet()
   private entityIdToComponentSet: Map<number, Set<Component>> = new Map()
 
   ;* getAllEntityIds(): Iterable<number> {
