@@ -1,26 +1,21 @@
-import { some, filter, every, drop, count } from 'iterable-operator'
+import { toArray, some, filter, every, drop, count } from 'iterable-operator'
 import { World } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
 import { BitSet } from '@blackglory/structures'
 import { Component } from './component'
-import { sortNumbersAscending } from 'extra-sort'
 
 export class Query {
   private isAvailable: boolean = true
-  private entityIds: BitSet = new BitSet()
-  // 经过升序排序的entityIds可以大幅增加访问性能,
-  // 因为这更符合内存顺序访问的顺序, 同时在分支预测方面也更有利.
-  private sortedEntityIds: number[] = []
-  private entityIdsAdded: boolean = false
-  private entityIdsDeleted: boolean = false
+  private entityIds = new BitSet()
+  private entityIdsChanged = false
+  private entityIdsCache: number[] = []
   private relatedComponentSet: Set<Component> = new Set()
   private removeEntityRemovedListener = this.world.on(
     'entityRemoved'
   , (entityId: number) => {
-      if (this.entityIds.has(entityId)) {
-        this.entityIds.delete(entityId)
-        this.entityIdsDeleted = true
+      if (this.hasEntityId(entityId)) {
+        this.removeEntityId(entityId)
       }
     }
   )
@@ -31,16 +26,13 @@ export class Query {
         return this.isComponentRelated(component)
       })
       if (isChangedComponentsRelated) {
-        if (this.entityIds.has(entityId)) {
+        if (this.hasEntityId(entityId)) {
           if (!this.isMatch(entityId)) {
-            this.entityIds.delete(entityId)
-            this.entityIdsDeleted = true
+            this.removeEntityId(entityId)
           }
         } else {
           if (this.isMatch(entityId)) {
-            this.entityIds.add(entityId)
-            this.sortedEntityIds.push(entityId)
-            this.entityIdsAdded = true
+            this.addEntityId(entityId)
           }
         }
       }
@@ -64,34 +56,46 @@ export class Query {
     for (const entityId of this.world.getAllEntityIds()) {
       if (this.isMatch(entityId)) {
         this.entityIds.add(entityId)
-        this.sortedEntityIds.push(entityId)
+        this.entityIdsChanged = true
       }
     }
 
-    sortNumbersAscending(this.sortedEntityIds)
+    this.updateEntityIdsCache()
   }
 
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
-    if (this.entityIdsDeleted) {
-      const sortedEntityIds = [...this.entityIds]
-      sortNumbersAscending(sortedEntityIds)
-      this.sortedEntityIds = sortedEntityIds
+    this.updateEntityIdsCache()
 
-      this.entityIdsDeleted = false
-      this.entityIdsAdded = false
-    } else if (this.entityIdsAdded) {
-      sortNumbersAscending(this.sortedEntityIds)
+    return this.entityIdsCache
+  }
 
-      this.entityIdsAdded = false
-    }
-
-    return this.sortedEntityIds
+  destroy(): void {
+    this.isAvailable = false
+    this.removeEntityComponentsChangedListener()
+    this.removeEntityRemovedListener()
   }
 
   hasEntityId(entityId: number): boolean {
     return this.entityIds.has(entityId)
+  }
+
+  private removeEntityId(entityId: number): void {
+    this.entityIds.delete(entityId)
+    this.entityIdsChanged = true
+  }
+
+  private addEntityId(entityId: number): void {
+    this.entityIds.add(entityId)
+    this.entityIdsChanged = true
+  }
+
+  private updateEntityIdsCache() {
+    if (this.entityIdsChanged) {
+      this.entityIdsCache = toArray(this.entityIds.values())
+      this.entityIdsChanged = false
+    }
   }
 
   private * extractComponents(pattern: Pattern): IterableIterator<Component> {
@@ -157,11 +161,5 @@ export class Query {
         return false
       }
     }
-  }
-
-  destroy(): void {
-    this.isAvailable = false
-    this.removeEntityComponentsChangedListener()
-    this.removeEntityRemovedListener()
   }
 }
