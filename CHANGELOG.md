@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.9](https://github.com/BlackGlory/extra-ecs/compare/v0.2.8...v0.2.9) (2022-09-21)
+
+
+### Bug Fixes
+
+* use the latest version of @blackglory/structures ([e904dd8](https://github.com/BlackGlory/extra-ecs/commit/e904dd8b96a355f3c1a0685bf3a32edf02288335))
+
 ### [0.2.8](https://github.com/BlackGlory/extra-ecs/compare/v0.2.7...v0.2.8) (2022-09-20)
 
 ### [0.2.7](https://github.com/BlackGlory/extra-ecs/compare/v0.2.6...v0.2.7) (2022-09-20)
