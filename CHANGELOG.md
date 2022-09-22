@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.11](https://github.com/BlackGlory/extra-ecs/compare/v0.2.10...v0.2.11) (2022-09-22)
+
+
+### Bug Fixes
+
+* the signature of world.addComponents ([39798dd](https://github.com/BlackGlory/extra-ecs/commit/39798dd125ef71bbef5d25e13088f6508317c21f))
+
 ### [0.2.10](https://github.com/BlackGlory/extra-ecs/compare/v0.2.9...v0.2.10) (2022-09-21)
 
 ### [0.2.9](https://github.com/BlackGlory/extra-ecs/compare/v0.2.8...v0.2.9) (2022-09-21)
