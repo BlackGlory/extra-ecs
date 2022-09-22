@@ -11,10 +11,7 @@ export class Query {
   private relatedArchetypeSet: Set<Archetype> = new Set()
   private removeNewArchetypeAddedListener: () => void
 
-  constructor(
-    world: World
-  , pattern: Pattern
-  ) {
+  constructor(world: World, pattern: Pattern) {
     for (const archetype of world._archetypeRegistry.getAllArchetypes()) {
       if (isArchetypeMatch(archetype, pattern)) {
         this.relatedArchetypeSet.add(archetype)
@@ -50,9 +47,9 @@ export class Query {
 }
 
 function isArchetypeMatch(archetype: Archetype, pattern: Pattern): boolean {
-    const components = toArray(archetype.getAllComponents())
-    return isComponentsMatch(components, pattern)
-  }
+  const components = toArray(archetype.getAllComponents())
+  return isComponentsMatch(components, pattern)
+}
 
 function isComponentsMatch(components: Component[], pattern: Pattern): boolean {
   if (isExpression(pattern)) {
