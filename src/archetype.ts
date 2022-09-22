@@ -3,6 +3,7 @@ import { StructureOfSparseMaps } from 'structure-of-arrays'
 import { Component, ComponentId } from './component'
 import { EntityId } from './entity-id'
 import { World } from './world'
+import { BitSet } from '@blackglory/structures'
 
 export type ArchetypeId = bigint
 
@@ -18,7 +19,7 @@ export class Archetype {
     ComponentId
   , StructureOfSparseMaps<any>
   > = new Map()
-  private entityIdSet: Set<EntityId> = new Set()
+  private entityIdSet = new BitSet()
 
   constructor(
     world: World
