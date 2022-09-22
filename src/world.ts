@@ -1,7 +1,7 @@
 import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapAllProps, Equals } from 'hotypes'
 import { Falsy } from 'justypes'
-import { Emitter, BitSet } from '@blackglory/structures'
+import { Emitter } from '@blackglory/structures'
 import {
   StructureOfArrays
 , Structure
@@ -12,15 +12,16 @@ import { Component } from './component'
 
 type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
-    Array<T[Index]> extends Array<infer U> // 使T[Index]成为一个变量, 从而让TypeScript正确跟踪其类型
+    // 使Exclude<T[Index]>成为变量U
+    Array<Exclude<T[Index], | Falsy>> extends Array<infer U>
     ? (
         U extends Structure
         ? (
             Equals<U, {}> extends true
-            ? [component: Component<U>]
-            : [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
+            ? Falsy | [component: Component<U>]
+            : Falsy | [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
           )
-        : Falsy
+        : never
       )
     : never
 }
