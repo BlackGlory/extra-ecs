@@ -15,7 +15,7 @@ export class Query {
     world: World
   , pattern: Pattern
   ) {
-    for (const archetype of world._archetypeRegistry.getAllArchtypes()) {
+    for (const archetype of world._archetypeRegistry.getAllArchetypes()) {
       if (isArchetypeMatch(archetype, pattern)) {
         this.relatedArchetypeSet.add(archetype)
       }
@@ -43,8 +43,8 @@ export class Query {
   }
 
   private * _findAllEntityIds(): Iterable<EntityId> {
-    for (const archtype of this.relatedArchetypeSet) {
-      yield* archtype.getEntityIdsForStorageTraversal()
+    for (const archetype of this.relatedArchetypeSet) {
+      yield* archetype.getEntityIdsForStorageTraversal()
     }
   }
 }

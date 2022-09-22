@@ -46,7 +46,7 @@ describe('ArchtypeRegistry', () => {
       const archetype = new Archetype(world, new Set())
       registry.addArchetype(archetype)
 
-      const result = registry.getArchtype(archetype.id)
+      const result = registry.getArchetypee(archetype.id)
 
       expect(result).toBe(archetype)
     })
@@ -54,7 +54,7 @@ describe('ArchtypeRegistry', () => {
     test('does not exist', () => {
       const registry = new ArchetypeRegistry()
 
-      const result = registry.getArchtype(EmptyArchetypeId)
+      const result = registry.getArchetypee(EmptyArchetypeId)
 
       expect(result).toBe(undefined)
     })
@@ -64,7 +64,7 @@ describe('ArchtypeRegistry', () => {
     test('empty', () => {
       const registry = new ArchetypeRegistry()
 
-      const result = registry.getAllArchtypes()
+      const result = registry.getAllArchetypes()
       const arrResult = toArray(result)
 
       expect(result).toBeIterable()
@@ -80,7 +80,7 @@ describe('ArchtypeRegistry', () => {
       registry.addArchetype(archetype1)
       registry.addArchetype(archetype2)
 
-      const result = registry.getAllArchtypes()
+      const result = registry.getAllArchetypes()
       const arrResult = toArray(result)
 
       expect(result).toBeIterable()

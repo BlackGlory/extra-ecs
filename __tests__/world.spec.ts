@@ -47,7 +47,7 @@ describe('World', () => {
         world.addComponents(entityId, [component])
 
         const componentId = world._componentRegistry.getComponentId(component)
-        const archetype = world._archetypeRegistry.getArchtype(componentId)!
+        const archetype = world._archetypeRegistry.getArchetypee(componentId)!
         expect(world._archetypeRegistry.hasArchetype(componentId)).toBe(true)
         expect(toArray(archetype.getAllComponents())).toStrictEqual([component])
         expect(component.getValue(entityId, 'id')).toBe(undefined)
@@ -61,7 +61,7 @@ describe('World', () => {
         world.addComponents(entityId, [component])
 
         const componentId = world._componentRegistry.getComponentId(component)
-        const archetype = world._archetypeRegistry.getArchtype(componentId)!
+        const archetype = world._archetypeRegistry.getArchetypee(componentId)!
         expect(toArray(archetype.getAllComponents())).toStrictEqual([component])
         expect(component.getValue(entityId, 'id')).toBe(undefined)
       })
@@ -77,7 +77,7 @@ describe('World', () => {
         world.addComponents(entityId, [component, { value: 2 }])
 
         const componentId = world._componentRegistry.getComponentId(component)
-        const archetype = world._archetypeRegistry.getArchtype(componentId)!
+        const archetype = world._archetypeRegistry.getArchetypee(componentId)!
         expect(toArray(archetype.getAllComponents())).toStrictEqual([component])
         expect(component.getValue(entityId, 'value')).toBe(2)
       })
@@ -90,7 +90,7 @@ describe('World', () => {
         world.addComponents(entityId, [component, { value: 2 }])
 
         const componentId = world._componentRegistry.getComponentId(component)
-        const archetype = world._archetypeRegistry.getArchtype(componentId)!
+        const archetype = world._archetypeRegistry.getArchetypee(componentId)!
         expect(toArray(archetype.getAllComponents())).toStrictEqual([component])
         expect(component.getValue(entityId, 'value')).toBe(2)
       })
@@ -119,7 +119,7 @@ describe('World', () => {
         world.removeComponents(entityId, component)
 
         const componentId = world._componentRegistry.getComponentId(component)
-        const archetype = world._archetypeRegistry.getArchtype(componentId)!
+        const archetype = world._archetypeRegistry.getArchetypee(componentId)!
         expect(toArray(archetype.getEntityIds())).toStrictEqual([])
         const newArchetype = world._entityArchetypeRegistry.getArchetype(entityId)!
         expect(newArchetype.id).toBe(EmptyArchetypeId)
@@ -147,7 +147,7 @@ describe('World', () => {
         world.removeComponents(entityId, component)
 
         const componentId = world._componentRegistry.getComponentId(component)
-        const archetype = world._archetypeRegistry.getArchtype(componentId)!
+        const archetype = world._archetypeRegistry.getArchetypee(componentId)!
         expect(toArray(archetype.getEntityIds())).toStrictEqual([])
         const newArchetype = world._entityArchetypeRegistry.getArchetype(entityId)!
         expect(newArchetype.id).toBe(EmptyArchetypeId)

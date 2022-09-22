@@ -55,7 +55,7 @@ export class World extends Emitter<{
         , ([component]) => component
         ))
         if (includes(oldArchetype.hasComponents(componentSet), false)) {
-          // 并非所有新component已经在archtype里, 需要变更enttiy对应的archetype
+          // 并非所有新component已经在archetype里, 需要变更enttiy对应的archetype
 
           const archetype = go(() => {
             const newComponentSet = new Set([
@@ -65,7 +65,7 @@ export class World extends Emitter<{
             const newArchetypeId = computeArchetypeId(
               new Set(map(newComponentSet, component => component.id))
             )
-            const achetype = this._archetypeRegistry.getArchtype(newArchetypeId)
+            const achetype = this._archetypeRegistry.getArchetypee(newArchetypeId)
             if (achetype) {
               return achetype
             } else {
@@ -94,7 +94,7 @@ export class World extends Emitter<{
           })
 
           const newArchetypeId = computeArchetypeId(componentIdSet)
-          const archetype = this._archetypeRegistry.getArchtype(newArchetypeId)
+          const archetype = this._archetypeRegistry.getArchetypee(newArchetypeId)
           if (archetype) {
             return archetype
           } else {
@@ -145,7 +145,7 @@ export class World extends Emitter<{
             const newArchetypeId = computeArchetypeId(
               new Set(map(newComponentSet, component => component.id))
             )
-            const archetype = this._archetypeRegistry.getArchtype(newArchetypeId)
+            const archetype = this._archetypeRegistry.getArchetypee(newArchetypeId)
             if (archetype) {
               return archetype
             } else {
@@ -167,7 +167,7 @@ export class World extends Emitter<{
 
         const newArchetype = go(() => {
           const newArchetypeId: ArchetypeId = EmptyArchetypeId
-          const newArchetype = this._archetypeRegistry.getArchtype(newArchetypeId)
+          const newArchetype = this._archetypeRegistry.getArchetypee(newArchetypeId)
           if (newArchetype) {
             return newArchetype
           } else {

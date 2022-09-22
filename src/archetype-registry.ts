@@ -3,11 +3,11 @@ import { Archetype, ArchetypeId } from './archetype'
 export class ArchetypeRegistry {
   private archetypeIdToArchetype: Map<ArchetypeId, Archetype> = new Map()
 
-  getAllArchtypes(): Iterable<Archetype> {
+  getAllArchetypes(): Iterable<Archetype> {
     return this.archetypeIdToArchetype.values()
   }
 
-  getArchtype(id: ArchetypeId): Archetype | undefined {
+  getArchetypee(id: ArchetypeId): Archetype | undefined {
     return this.archetypeIdToArchetype.get(id)
   }
 
