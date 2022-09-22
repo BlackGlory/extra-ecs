@@ -9,6 +9,6 @@ yarn tsc \
 echo '-------------------'
 echo 'extra-ecs'
 echo '-------------------'
-node --inspect-brk --expose-gc ./benches/extra-ecs/benchmark.js
+node --expose-gc ./benches/extra-ecs/benchmark.js
 
 rm ./benches/**/*.js
