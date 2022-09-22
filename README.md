@@ -1,5 +1,5 @@
 # extra-ecs
-This is an experimental project, please use it with care.
+The experimental implementation of archetype in JavaScript, used for benchmarking only.
 
 ## Install
 ```sh
