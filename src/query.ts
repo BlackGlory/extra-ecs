@@ -14,9 +14,7 @@ export class Query {
   private removeEntityRemovedListener = this.world.on(
     'entityRemoved'
   , (entityId: number) => {
-      if (this.hasEntityId(entityId)) {
-        this.removeEntityId(entityId)
-      }
+      this.removeEntityId(entityId)
     }
   )
   private removeEntityComponentsChangedListener = this.world.on(
@@ -82,8 +80,10 @@ export class Query {
   }
 
   private removeEntityId(entityId: number): void {
-    this.entityIds.delete(entityId)
-    this.entityIdsChanged = true
+    const deleted = this.entityIds.delete(entityId)
+    if (deleted) {
+      this.entityIdsChanged = true
+    }
   }
 
   private addEntityId(entityId: number): void {
