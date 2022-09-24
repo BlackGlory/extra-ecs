@@ -35,7 +35,7 @@ export class World extends Emitter<{
 }> {
   private nextEntityId: number = 0
   private deletedEntityIds = new Set<number>()
-  private entityIdToComponentSet: Map<number, Set<Component>> = new Map()
+  _entityIdToComponentSet: Map<number, Set<Component>> = new Map()
 
   ;* getAllEntityIds(): Iterable<number> {
     for (let entityId = 0; entityId < this.nextEntityId; entityId++) {
@@ -65,7 +65,7 @@ export class World extends Emitter<{
 
   removeEntityId(entityId: number): void {
     if (this.hasEntityId(entityId)) {
-      const componentSet = this.entityIdToComponentSet.get(entityId)
+      const componentSet = this._entityIdToComponentSet.get(entityId)
       if (componentSet) {
         for (const component of componentSet) {
           if (component instanceof StructureOfArrays) {
@@ -73,7 +73,7 @@ export class World extends Emitter<{
           }
         }
 
-        this.entityIdToComponentSet.delete(entityId)
+        this._entityIdToComponentSet.delete(entityId)
       }
 
       this.deletedEntityIds.add(entityId)
@@ -87,7 +87,7 @@ export class World extends Emitter<{
   ): MapAllProps<T, boolean> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this.entityIdToComponentSet.get(entityId)
+    const componentSet = this._entityIdToComponentSet.get(entityId)
     if (componentSet) {
       const results = components.map(component => componentSet.has(component))
       return results as MapAllProps<T, boolean>
@@ -99,7 +99,7 @@ export class World extends Emitter<{
   getComponents(entityId: number): Iterable<Component> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this.entityIdToComponentSet.get(entityId)
+    const componentSet = this._entityIdToComponentSet.get(entityId)
     return componentSet
          ? toArray(componentSet)
          : []
@@ -143,29 +143,27 @@ export class World extends Emitter<{
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
     const componentSet = this.getComponentSet(entityId)
-    if (componentSet) {
-      const removedComponents: Component[] = []
-      components.forEach(component => {
-        if (component) {
-          if (componentSet.delete(component)) {
-            removedComponents.push(component)
-          }
+    const removedComponents: Component[] = []
+    components.forEach(component => {
+      if (component) {
+        if (componentSet.delete(component)) {
+          removedComponents.push(component)
         }
-      })
-
-      if (removedComponents.length) {
-        this.emit('entityComponentsChanged', entityId, removedComponents)
       }
+    })
+
+    if (removedComponents.length) {
+      this.emit('entityComponentsChanged', entityId, removedComponents)
     }
   }
 
   private getComponentSet(entityId: number): Set<Component> {
-    const componentSet = this.entityIdToComponentSet.get(entityId)
+    const componentSet = this._entityIdToComponentSet.get(entityId)
     if (componentSet) {
       return componentSet
     } else {
       const componentSet: Set<Component> = new Set()
-      this.entityIdToComponentSet.set(entityId, componentSet)
+      this._entityIdToComponentSet.set(entityId, componentSet)
       return componentSet
     }
   }
