@@ -87,8 +87,10 @@ export class Query {
   }
 
   private addEntityId(entityId: number): void {
-    this.entityIds.add(entityId)
-    this.entityIdsChanged = true
+    const added = this.entityIds.add(entityId)
+    if (added) {
+      this.entityIdsChanged = true
+    }
   }
 
   private updateEntityIdsCache() {
