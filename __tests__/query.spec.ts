@@ -24,33 +24,6 @@ describe('Query', () => {
     expect(arr).toStrictEqual([entityId1])
   })
 
-  describe('hasEntityId', () => {
-    test('exists', () => {
-      const world = new World()
-      const component = Symbol()
-      const entityId = world.createEntityId()
-      world.addComponents(entityId, [component])
-      const query = new Query(world, component)
-
-      const result = query.hasEntityId(entityId)
-
-      expect(result).toBe(true)
-    })
-
-    test('does not exist', () => {
-      const world = new World()
-      const component1 = Symbol()
-      const component2 = Symbol()
-      const entityId = world.createEntityId()
-      world.addComponents(entityId, [component2])
-      const query = new Query(world, component1)
-
-      const result = query.hasEntityId(entityId)
-
-      expect(result).toBe(false)
-    })
-  })
-
   describe('entityComponentsChanged event', () => {
     describe('remove entity', () => {
       test('entityId exists', () => {

@@ -10,6 +10,11 @@ import {
 import { toArray, first } from 'iterable-operator'
 import { Component } from './component'
 
+export enum Event {
+  EntityRemoved
+, EntityComponentsChanged
+}
+
 type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
     // 使Exclude<T[Index]>成为变量U
@@ -30,8 +35,8 @@ type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
  * 世界的本质是一个内存数据库管理系统.
  */
 export class World extends Emitter<{
-  entityRemoved: [entityId: number]
-  entityComponentsChanged: [entityId: number, changedComponents: Component[]]
+  [Event.EntityRemoved]: [entityId: number]
+  [Event.EntityComponentsChanged]: [entityId: number, changedComponents: Component[]]
 }> {
   private nextEntityId: number = 0
   private deletedEntityIds = new Set<number>()
@@ -77,7 +82,7 @@ export class World extends Emitter<{
       }
 
       this.deletedEntityIds.add(entityId)
-      this.emit('entityRemoved', entityId)
+      this.emit(Event.EntityRemoved, entityId)
     }
   }
 
@@ -132,7 +137,7 @@ export class World extends Emitter<{
     })
 
     if (newAddedComponents.length > 0) {
-      this.emit('entityComponentsChanged', entityId, newAddedComponents)
+      this.emit(Event.EntityComponentsChanged, entityId, newAddedComponents)
     }
   }
 
@@ -153,7 +158,7 @@ export class World extends Emitter<{
     })
 
     if (removedComponents.length) {
-      this.emit('entityComponentsChanged', entityId, removedComponents)
+      this.emit(Event.EntityComponentsChanged, entityId, removedComponents)
     }
   }
 

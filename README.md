@@ -100,7 +100,6 @@ class World {
 class Query {
   constructor(world: World, pattern: Pattern)
 
-  hasEntityId(entityId: number): boolean
   findAllEntityIds(): Iterable<number>
 
   destroy(): void
