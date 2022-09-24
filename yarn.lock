@@ -356,6 +356,17 @@
     justypes "^3.0.0"
     rxjs "^7.5.5"
 
+"@blackglory/structures@^0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.11.1.tgz#d56fd5022372ceeaa2d0e2b9875311d7272df60e"
+  integrity sha512-bvxB8Sic9d+o6gerAAcPn4kSLUjUma1XJQ+GJFfXATlP3ulpjuLwZDF9o04QLMrgJTddjewG7+b8hj3y1CZpiQ==
+  dependencies:
+    "@blackglory/errors" "^2.2.2"
+    "@blackglory/types" "^1.3.0"
+    extra-timers "^0.2.5"
+    iterable-operator "^1.2.1"
+    justypes "^3.0.0"
+
 "@blackglory/structures@^0.6.2":
   version "0.6.9"
   resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.6.9.tgz#6f3ce28f14f1142635fd489d020fe2f34ad238d5"
