@@ -61,6 +61,7 @@ export class Query {
     this.updateEntityIdsCache()
   }
 
+  // 该方法会非常频繁地被调用, 需要特别关注其性能表现.
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
