@@ -1,5 +1,5 @@
 import { toArray, some, filter, every, drop, count } from 'iterable-operator'
-import { World } from './world'
+import { World, WorldEvent } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
 import { BitSet } from '@blackglory/structures'
@@ -12,13 +12,13 @@ export class Query {
   private entityIdsCache: number[] = []
   private relatedComponentSet: Set<Component> = new Set()
   private removeEntityRemovedListener = this.world.on(
-    'entityRemoved'
+    WorldEvent.EntityRemoved
   , (entityId: number) => {
       this.removeEntityId(entityId)
     }
   )
   private removeEntityComponentsChangedListener = this.world.on(
-    'entityComponentsChanged'
+    WorldEvent.EntityComponentsChanged
   , (entityId: number, changedComponents: Component[]): void => {
       const isChangedComponentsRelated = changedComponents.some(component => {
         return this.isComponentRelated(component)
