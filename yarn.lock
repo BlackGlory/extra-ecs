@@ -330,7 +330,7 @@
   resolved "https://registry.yarnpkg.com/@blackglory/pass/-/pass-1.1.0.tgz#f281b7647bf542f98ede594338742ab406f97afc"
   integrity sha512-J8epu3YVtfzP+VHJE5RR42bI0tAGBZ4nK8+0zAOfY8amw58ykWb2tUJD+N4l6SCpGZ/fQ5S6tQDl+qyNoOIhzg==
 
-"@blackglory/prelude@^0.1.0", "@blackglory/prelude@^0.1.4", "@blackglory/prelude@^0.1.5":
+"@blackglory/prelude@^0.1.0", "@blackglory/prelude@^0.1.5":
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/@blackglory/prelude/-/prelude-0.1.5.tgz#2ed0f2b543868250d93c1f893e6d92a462d4643c"
   integrity sha512-Hkc3KrUb3TpLu+cUhGyFkGCEU3/GfWzSOF/F+ci5G1hD/gDgM+hOvjx0bm8LFg8RwMXMf+u1yUmS5Xertii29g==
@@ -2468,13 +2468,6 @@ extglob@^2.0.4:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
-
-extra-benchmark@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/extra-benchmark/-/extra-benchmark-0.1.1.tgz#0c0015cd82690dc910f48c7f7eb958b71957a38b"
-  integrity sha512-U5VFanpW1Vj47i2I8aCXCsXspdbAdNMMrlprxB0cvqvGSsXzmk/iEuS/w5BL1TpJU3cpYZte3IDj61XmbVROog==
-  dependencies:
-    "@blackglory/prelude" "^0.1.4"
 
 extra-filesystem@^0.4.2:
   version "0.4.5"
