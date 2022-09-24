@@ -1,23 +1,39 @@
-import { some, filter, every, drop, count } from 'iterable-operator'
-import { World, Event } from './world'
+import { toArray, some, filter, every, drop, count } from 'iterable-operator'
+import { World } from './world'
 import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
 import { assert } from '@blackglory/prelude'
+import { BitSet } from '@blackglory/structures'
 import { Component } from './component'
 
 export class Query {
   private isAvailable: boolean = true
-  private matchedEntityIdsCache: number[] = []
-  private matchedEntityIdsCacheShouldUpdate = true
+  private entityIds = new BitSet()
+  private entityIdsChanged = false
+  private entityIdsCache: number[] = []
+  private relatedComponentSet: Set<Component> = new Set()
   private removeEntityRemovedListener = this.world.on(
-    Event.EntityRemoved
+    'entityRemoved'
   , (entityId: number) => {
-      this.matchedEntityIdsCacheShouldUpdate = true
+      this.removeEntityId(entityId)
     }
   )
   private removeEntityComponentsChangedListener = this.world.on(
-    Event.EntityComponentsChanged
+    'entityComponentsChanged'
   , (entityId: number, changedComponents: Component[]): void => {
-      this.matchedEntityIdsCacheShouldUpdate = true
+      const isChangedComponentsRelated = changedComponents.some(component => {
+        return this.isComponentRelated(component)
+      })
+      if (isChangedComponentsRelated) {
+        if (this.hasEntityId(entityId)) {
+          if (!this.isMatch(entityId)) {
+            this.removeEntityId(entityId)
+          }
+        } else {
+          if (this.isMatch(entityId)) {
+            this.addEntityId(entityId)
+          }
+        }
+      }
     }
   )
 
@@ -28,14 +44,29 @@ export class Query {
   constructor(
     private readonly world: World
   , private readonly pattern: Pattern
-  ) {}
+  ) {
+    // init `this.relatedComponents`
+    for (const component of this.extractComponents(pattern)) {
+      this.relatedComponentSet.add(component)
+    }
+
+    // init `this.entitiyIds`
+    for (const entityId of this.world.getAllEntityIds()) {
+      if (this.isMatch(entityId)) {
+        this.entityIds.add(entityId)
+        this.entityIdsChanged = true
+      }
+    }
+
+    this.updateEntityIdsCache()
+  }
 
   findAllEntityIds(): Iterable<number> {
     assert(this.isAvailable, 'The query is not available')
 
     this.updateEntityIdsCache()
 
-    return this.matchedEntityIdsCache
+    return this.entityIdsCache
   }
 
   destroy(): void {
@@ -44,17 +75,59 @@ export class Query {
     this.removeEntityRemovedListener()
   }
 
-  private updateEntityIdsCache() {
-    if (this.matchedEntityIdsCacheShouldUpdate) {
-      const entityIds: number[] = []
-      for (const entityId of this.world.getAllEntityIds()) {
-        if (this.isMatch(entityId)) {
-          entityIds.push(entityId)
-        }
-      }
-      this.matchedEntityIdsCache = entityIds
-      this.matchedEntityIdsCacheShouldUpdate = false
+  hasEntityId(entityId: number): boolean {
+    return this.entityIds.has(entityId)
+  }
+
+  private removeEntityId(entityId: number): void {
+    const deleted = this.entityIds.delete(entityId)
+    if (deleted) {
+      this.entityIdsChanged = true
     }
+  }
+
+  private addEntityId(entityId: number): void {
+    const added = this.entityIds.add(entityId)
+    if (added) {
+      this.entityIdsChanged = true
+    }
+  }
+
+  private updateEntityIdsCache() {
+    if (this.entityIdsChanged) {
+      this.entityIdsCache = toArray(this.entityIds.values())
+      this.entityIdsChanged = false
+    }
+  }
+
+  private * extractComponents(pattern: Pattern): IterableIterator<Component> {
+    if (isExpression(pattern)) {
+      if (isNot(pattern)) {
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
+        }
+      } else if (isAllOf(pattern)) {
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
+        }
+      } else if (isAnyOf(pattern)) {
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
+        }
+      } else if (isOneOf(pattern)) {
+        for (const subPattern of drop(pattern, 1) as Iterable<Pattern>) {
+          yield* this.extractComponents(subPattern)
+        }
+      } else {
+        throw new Error('Invalid pattern')
+      }
+    } else {
+      yield pattern
+    }
+  }
+
+  private isComponentRelated(component: Component): boolean {
+    return this.relatedComponentSet.has(component)
   }
 
   private isMatch(entityId: number, pattern: Pattern = this.pattern): boolean {

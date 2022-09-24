@@ -356,10 +356,10 @@
     justypes "^3.0.0"
     rxjs "^7.5.5"
 
-"@blackglory/structures@^0.11.3":
-  version "0.11.3"
-  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.11.3.tgz#eaed727da242a1d6454e148920b87c57cb2d0c2d"
-  integrity sha512-xWlOsN1y9OmdfwDThFCehu9fzA5JIGivk5yDpsgOgyTN1LqVR8eOkDfwlMZe22D5qnOHuMdYuJDm1F1N1EWq0A==
+"@blackglory/structures@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@blackglory/structures/-/structures-0.11.2.tgz#b612b5ea1bd4e9a10782c6ba26c27a86a8687b74"
+  integrity sha512-N4LL3DpR37iEnyYp7sUcqPt+qRoKqhWzmjtG/MAV7JzxbRUXtCPe99Tss2JbBNYO+16lewGOkGoJHnNVGZSsAQ==
   dependencies:
     "@blackglory/errors" "^2.2.2"
     "@blackglory/go" "^1.1.2"

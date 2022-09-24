@@ -1,3 +1,3 @@
-export { World } from './world'
-export { Query } from './query'
+export * from './world'
+export * from './query'
 export { allOf, anyOf, oneOf, not, and, or, xor } from './pattern'
