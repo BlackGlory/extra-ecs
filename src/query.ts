@@ -159,8 +159,8 @@ export class Query {
         throw new Error('Invalid pattern')
       }
     } else {
-      return this.world._entityIdToComponentSet[entityId]?.has(pattern)
-          ?? false
+      const component = pattern
+      return this.world._hasComponent(entityId, component)
     }
   }
 }

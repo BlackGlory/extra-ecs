@@ -40,7 +40,7 @@ export class World extends Emitter<{
 }> {
   private nextEntityId: number = 0
   private deletedEntityIds = new Set<number>()
-  _entityIdToComponentSet: Array<Set<Component> | undefined> = []
+  private entityIdToComponentSet: Array<Set<Component> | undefined> = []
 
   ;* getAllEntityIds(): Iterable<number> {
     for (let entityId = 0; entityId < this.nextEntityId; entityId++) {
@@ -70,7 +70,7 @@ export class World extends Emitter<{
 
   removeEntityId(entityId: number): void {
     if (this.hasEntityId(entityId)) {
-      const componentSet = this._entityIdToComponentSet[entityId]
+      const componentSet = this.entityIdToComponentSet[entityId]
       if (componentSet) {
         for (const component of componentSet) {
           if (component instanceof StructureOfArrays) {
@@ -78,7 +78,7 @@ export class World extends Emitter<{
           }
         }
 
-        delete this._entityIdToComponentSet[entityId]
+        delete this.entityIdToComponentSet[entityId]
       }
 
       this.deletedEntityIds.add(entityId)
@@ -92,7 +92,7 @@ export class World extends Emitter<{
   ): MapAllProps<T, boolean> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this._entityIdToComponentSet[entityId]
+    const componentSet = this.entityIdToComponentSet[entityId]
     if (componentSet) {
       const results = components.map(component => componentSet.has(component))
       return results as MapAllProps<T, boolean>
@@ -101,10 +101,15 @@ export class World extends Emitter<{
     }
   }
 
+  _hasComponent(entityId: number, component: Component): boolean {
+    return this.entityIdToComponentSet[entityId]?.has(component)
+        ?? false
+  }
+
   getComponents(entityId: number): Iterable<Component> {
     assert(this.hasEntityId(entityId), 'The entity does not exist')
 
-    const componentSet = this._entityIdToComponentSet[entityId]
+    const componentSet = this.entityIdToComponentSet[entityId]
     return componentSet
          ? toArray(componentSet)
          : []
@@ -163,12 +168,12 @@ export class World extends Emitter<{
   }
 
   private getComponentSet(entityId: number): Set<Component> {
-    const componentSet = this._entityIdToComponentSet[entityId]
+    const componentSet = this.entityIdToComponentSet[entityId]
     if (componentSet) {
       return componentSet
     } else {
       const componentSet: Set<Component> = new Set()
-      this._entityIdToComponentSet[entityId] = componentSet
+      this.entityIdToComponentSet[entityId] = componentSet
       return componentSet
     }
   }
