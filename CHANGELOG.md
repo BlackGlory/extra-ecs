@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.3.0](https://github.com/BlackGlory/extra-ecs/compare/v0.2.12...v0.3.0) (2022-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* Removed `Query.hasEntityId`
+
+* simplify Query to improve performance ([12fd852](https://github.com/BlackGlory/extra-ecs/commit/12fd852fe828ba09647b0595d36a0f5a04e4558c))
+
 ### [0.2.12](https://github.com/BlackGlory/extra-ecs/compare/v0.2.11...v0.2.12) (2022-09-24)
 
 ### [0.2.11](https://github.com/BlackGlory/extra-ecs/compare/v0.2.10...v0.2.11) (2022-09-22)
