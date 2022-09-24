@@ -83,7 +83,7 @@ export class Query {
         throw new Error('Invalid pattern')
       }
     } else {
-      return this.world._entityIdToComponentSet.get(entityId)?.has(pattern)
+      return this.world._entityIdToComponentSet[entityId]?.has(pattern)
           ?? false
     }
   }
