@@ -7,6 +7,8 @@ import { Component } from './component'
 
 export class Query {
   private isAvailable: boolean = true
+  // 遍历BitSet很慢, 但它具有增序的特性.
+  // 在entityIds较为密集的情况下, 遍历一遍BitSet比把Set<number>转为数组再排序要快.
   private entityIds = new BitSet()
   private entityIdsChanged = false
   private entityIdsCache: number[] = []
