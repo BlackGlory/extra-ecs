@@ -18,7 +18,7 @@ export enum WorldEvent {
 type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
     // 使Exclude<T[Index]>成为变量U
-    Array<Exclude<T[Index], | Falsy>> extends Array<infer U>
+    [Exclude<T[Index], | Falsy>] extends [infer U]
     ? (
         U extends Structure
         ? (

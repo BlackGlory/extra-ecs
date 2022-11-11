@@ -60,7 +60,7 @@ type Component<T extends Structure = any> =
 ```ts
 type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
-    Array<Exclude<T[Index], | Falsy>> extends Array<infer U>
+    [Exclude<T[Index], | Falsy>] extends [infer U]
     ? (
         U extends Structure
         ? (
