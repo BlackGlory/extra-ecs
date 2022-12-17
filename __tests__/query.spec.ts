@@ -3,7 +3,6 @@ import { not, and, or, xor, allOf, anyOf, oneOf } from '@src/pattern'
 import { toArray } from 'iterable-operator'
 import { World } from '@src/world'
 import { getError } from 'return-style'
-import '@blackglory/jest-matchers'
 
 describe('Query', () => {
   test('findAllEntityIds', () => {
@@ -16,12 +15,11 @@ describe('Query', () => {
     world.addComponents(entityId2, [component2])
     const query = new Query(world, component1)
 
-    const result = query.findAllEntityIds()
-    const arr = toArray(result)
+    const iter = query.findAllEntityIds()
+    const result = toArray(iter)
 
-    expect(result).toBeIterable()
-    expect(arr).toHaveLength(1)
-    expect(arr).toStrictEqual([entityId1])
+    expect(result).toHaveLength(1)
+    expect(result).toStrictEqual([entityId1])
   })
 
   describe('hasEntityId', () => {

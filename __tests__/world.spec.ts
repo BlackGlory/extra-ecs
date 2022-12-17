@@ -2,29 +2,26 @@ import { toArray } from 'iterable-operator'
 import { World } from '@src/world'
 import { StructureOfArrays, int8 } from 'structure-of-arrays'
 import { getError } from 'return-style'
-import '@blackglory/jest-matchers'
 
 describe('World', () => {
   describe('getAllEntityIds', () => {
     test('empty', () => {
       const world = new World()
 
-      const result = world.getAllEntityIds()
-      const arr  = toArray(result)
+      const iter = world.getAllEntityIds()
+      const result  = toArray(iter)
 
-      expect(result).toBeIterable()
-      expect(arr).toStrictEqual([])
+      expect(result).toStrictEqual([])
     })
 
     test('non-empty', () => {
       const world = new World()
       const entityId = world.createEntityId()
 
-      const result = world.getAllEntityIds()
-      const arr  = toArray(result)
+      const iter = world.getAllEntityIds()
+      const result  = toArray(iter)
 
-      expect(result).toBeIterable()
-      expect(arr).toStrictEqual([entityId])
+      expect(result).toStrictEqual([entityId])
     })
   })
 
@@ -217,11 +214,10 @@ describe('World', () => {
         const world = new World()
         const entityId = world.createEntityId()
 
-        const result = world.getComponents(entityId)
-        const arr = toArray(result)
+        const iter = world.getComponents(entityId)
+        const result = toArray(iter)
 
-        expect(result).toBeIterable()
-        expect(arr).toStrictEqual([])
+        expect(result).toStrictEqual([])
       })
 
       test('exists', () => {
@@ -230,11 +226,10 @@ describe('World', () => {
         const component = Symbol()
         world.addComponents(entityId, [component])
 
-        const result = world.getComponents(entityId)
-        const arr = toArray(result)
+        const iter = world.getComponents(entityId)
+        const result = toArray(iter)
 
-        expect(result).toBeIterable()
-        expect(arr).toStrictEqual([component])
+        expect(result).toStrictEqual([component])
       })
     })
   })
