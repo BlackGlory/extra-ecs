@@ -4,6 +4,7 @@ import { Falsy } from 'justypes'
 import { Emitter } from '@blackglory/structures'
 import {
   StructureOfArrays
+, StructureOfSparseMaps
 , Structure
 , MapTypesOfStructureToPrimitives
 } from 'structure-of-arrays'
@@ -74,6 +75,8 @@ export class World extends Emitter<{
       if (componentSet) {
         for (const component of componentSet) {
           if (component instanceof StructureOfArrays) {
+            component.delete(entityId)
+          } else if (component instanceof StructureOfSparseMaps) {
             component.delete(entityId)
           }
         }

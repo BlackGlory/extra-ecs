@@ -53,6 +53,7 @@ movementSystem(deltaTime)
 ```ts
 type Component<T extends Structure = any> =
 | StructureOfArrays<T>
+| StructureOfSparseMaps<T>
 | symbol
 ```
 

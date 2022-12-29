@@ -1,9 +1,12 @@
 import { toArray } from 'iterable-operator'
 import { World } from '@src/world'
-import { StructureOfArrays, int8 } from 'structure-of-arrays'
+import { StructureOfArrays, StructureOfSparseMaps, int8 } from 'structure-of-arrays'
 import { getError } from 'return-style'
 
-describe('World', () => {
+describe.each([
+  ['StructureOfArrays', StructureOfArrays]
+, ['StructureOfSparseMaps', StructureOfSparseMaps]
+])('World (%s)', (_, Structure) => {
   describe('getAllEntityIds', () => {
     test('empty', () => {
       const world = new World()
@@ -47,7 +50,7 @@ describe('World', () => {
   describe('removeEntityId', () => {
     test('StructureOfArrays', () => {
       const world = new World()
-      const component = new StructureOfArrays({ value: int8 })
+      const component = new Structure({ value: int8 })
       const entityId = world.createEntityId()
       world.addComponents(entityId, [component])
 
@@ -112,8 +115,8 @@ describe('World', () => {
   describe('addComponents', () => {
     test('multiple components', () => {
       const world = new World()
-      const component1 = new StructureOfArrays({ x: int8 })
-      const component2 = new StructureOfArrays({ y: int8 })
+      const component1 = new Structure({ x: int8 })
+      const component2 = new Structure({ y: int8 })
       const component3 = Symbol()
       const entityId = world.createEntityId()
 
@@ -143,7 +146,7 @@ describe('World', () => {
 
     test('with value', () => {
       const world = new World()
-      const component = new StructureOfArrays({ value: int8 })
+      const component = new Structure({ value: int8 })
       const entityId = world.createEntityId()
 
       world.addComponents(entityId, [component, { value: 1 }])
@@ -155,7 +158,7 @@ describe('World', () => {
 
     test('without value', () => {
       const world = new World()
-      const component = new StructureOfArrays({ value: int8 })
+      const component = new Structure({ value: int8 })
       const entityId = world.createEntityId()
 
       world.addComponents(entityId, [component])
