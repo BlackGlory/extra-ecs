@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.4.2](https://github.com/BlackGlory/extra-ecs/compare/v0.4.1...v0.4.2) (2022-12-29)
+
+
+### Features
+
+* add `StructureOfSparseMaps` support ([36d872a](https://github.com/BlackGlory/extra-ecs/commit/36d872ad1e48267ac35fdbb399a09ca741de16af))
+
 ### [0.4.1](https://github.com/BlackGlory/extra-ecs/compare/v0.4.0...v0.4.1) (2022-12-29)
 
 ## [0.4.0](https://github.com/BlackGlory/extra-ecs/compare/v0.3.4...v0.4.0) (2022-12-29)
