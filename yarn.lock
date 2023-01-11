@@ -5313,10 +5313,10 @@ strip-json-comments@^3.1.0, strip-json-comments@^3.1.1:
   resolved "https://registry.yarnpkg.com/strip-json-comments/-/strip-json-comments-3.1.1.tgz#31f1281b3832630434831c310c01cccda8cbe006"
   integrity sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==
 
-structure-of-arrays@^0.6.1:
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/structure-of-arrays/-/structure-of-arrays-0.6.1.tgz#37bec37fc95bfed9faa130d20fb204d5e82aaad2"
-  integrity sha512-Dy9/WFZla7BmCbEpHgqv9lZ9f7tvEcaxnoE2lF3TpZunKCw4DekFXOWlJeRVOEdINa+iBWFFD2QhpB7gwa4F1g==
+structure-of-arrays@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/structure-of-arrays/-/structure-of-arrays-0.7.0.tgz#01b094dcafccc64b592440bc1be51650e34983be"
+  integrity sha512-2iqzw4d7QEH4CQjO58AGar1+kzAQB3NCGH73t0Z22HHKsl1uGFUEBerwE4SR4VvNpsQ64XmLQrHCbSFldXlzfA==
   dependencies:
     "@blackglory/prelude" "^0.2.0"
     "@blackglory/structures" "^0.12.2"

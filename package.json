@@ -48,7 +48,7 @@
     "return-style": "^1.0.0",
     "rimraf": "^3.0.2",
     "standard-version": "^9.5.0",
-    "structure-of-arrays": "^0.6.1",
+    "structure-of-arrays": "^0.7.0",
     "ts-jest": "^29.0.3",
     "tscpaths": "^0.0.9",
     "tslib": "^2.4.1",
@@ -63,6 +63,6 @@
     "justypes": "^4.0.0"
   },
   "peerDependencies": {
-    "structure-of-arrays": "^0.5.11 || ^0.6.1"
+    "structure-of-arrays": "^0.5.11 || ^0.6.1 || ^0.7.0"
   }
 }

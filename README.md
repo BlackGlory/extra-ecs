@@ -8,17 +8,17 @@ yarn add extra-ecs
 
 ## Usage
 ```ts
-import { StructureOfArrays, double } from 'structure-of-arrays'
+import { StructureOfArrays, float64 } from 'structure-of-arrays'
 import { World, Query, allOf } from 'extra-ecs'
 
 const Enabled = Symbol()
 const Position = new StructureOfArrays({
-  x: double
-, y: double
+  x: float64
+, y: float64
 })
 const Velocity = new StructureOfArrays({
-  x: double
-, y: double
+  x: float64
+, y: float64
 })
 
 const world = new World()
