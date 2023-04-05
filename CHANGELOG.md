@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.5.0](https://github.com/BlackGlory/extra-ecs/compare/v0.4.3...v0.5.0) (2023-04-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* CommonJS => ESM
+
+* upgrade dependencies ([bf1ac2c](https://github.com/BlackGlory/extra-ecs/commit/bf1ac2c22e3b6c4574afbb7947c9985ba578fc83))
+
 ### [0.4.3](https://github.com/BlackGlory/extra-ecs/compare/v0.4.2...v0.4.3) (2023-01-11)
 
 ### [0.4.2](https://github.com/BlackGlory/extra-ecs/compare/v0.4.1...v0.4.2) (2022-12-29)
