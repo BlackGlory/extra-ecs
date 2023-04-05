@@ -1,4 +1,4 @@
-import { Operator, allOf, and, anyOf, not, oneOf, or, xor } from '@src/pattern'
+import { Operator, allOf, and, anyOf, not, oneOf, or, xor } from '@src/pattern.js'
 
 describe('Patterns', () => {
   test('not', () => {

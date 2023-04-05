@@ -1,7 +1,7 @@
-import { Query } from '@src/query'
-import { not, and, or, xor, allOf, anyOf, oneOf } from '@src/pattern'
+import { Query } from '@src/query.js'
+import { not, and, or, xor, allOf, anyOf, oneOf } from '@src/pattern.js'
 import { toArray } from 'iterable-operator'
-import { World } from '@src/world'
+import { World } from '@src/world.js'
 import { getError } from 'return-style'
 
 describe('Query', () => {

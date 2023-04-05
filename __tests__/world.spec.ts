@@ -1,5 +1,5 @@
 import { toArray } from 'iterable-operator'
-import { World } from '@src/world'
+import { World } from '@src/world.js'
 import { StructureOfArrays, StructureOfSparseMaps, int8 } from 'structure-of-arrays'
 import { getError } from 'return-style'
 

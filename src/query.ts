@@ -1,9 +1,9 @@
 import { toArray, some, filter, every, drop, count } from 'iterable-operator'
-import { World, WorldEvent } from './world'
-import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern'
+import { World, WorldEvent } from './world.js'
+import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf } from './pattern.js'
 import { assert } from '@blackglory/prelude'
 import { BitSet } from '@blackglory/structures'
-import { Component } from './component'
+import { Component } from './component.js'
 
 export class Query {
   private isAvailable: boolean = true

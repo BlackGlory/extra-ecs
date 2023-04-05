@@ -1,5 +1,5 @@
 import { isArray, NonEmptyArray } from '@blackglory/prelude'
-import { Component } from './component'
+import { Component } from './component.js'
 
 export type Pattern =
 | Component
