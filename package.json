@@ -61,11 +61,11 @@
     "yarn-deduplicate": "^6.0.1"
   },
   "dependencies": {
-    "@blackglory/prelude": "^0.3.2",
-    "@blackglory/structures": "^0.13.3",
-    "hotypes": "^0.6.1",
-    "iterable-operator": "^4.0.6",
-    "justypes": "^4.2.0"
+    "@blackglory/prelude": "^0.3.5",
+    "@blackglory/structures": "^0.14.7",
+    "hotypes": "^0.6.4",
+    "iterable-operator": "^5.1.0",
+    "justypes": "^4.3.0"
   },
   "peerDependencies": {
     "structure-of-arrays": "^0.5.11 || ^0.6.1 || ^0.7.0 || ^0.8.0 || ^0.9.0"
