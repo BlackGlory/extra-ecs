@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.6.0](https://github.com/BlackGlory/extra-ecs/compare/v0.5.4...v0.6.0) (2024-09-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* Node.js 16 => 18.17.0
+
+* upgrade dependencies ([025d5b6](https://github.com/BlackGlory/extra-ecs/commit/025d5b63364cd4546f34fa973a67487187c58f1c))
+
 ### [0.5.4](https://github.com/BlackGlory/extra-ecs/compare/v0.5.3...v0.5.4) (2024-09-04)
 
 ### [0.5.3](https://github.com/BlackGlory/extra-ecs/compare/v0.5.2...v0.5.3) (2024-09-04)
