@@ -81,7 +81,7 @@ export class World extends Emitter<{
           }
         }
 
-        delete this.entityIdToComponentSet[entityId]
+        this.entityIdToComponentSet[entityId] = undefined
       }
 
       this.deletedEntityIds.add(entityId)
