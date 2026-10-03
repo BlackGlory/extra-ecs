@@ -33,14 +33,14 @@ world.addComponents(
 world.addComponents(
   enemy
 , [Position, { x: 100, y: 0 }]
-, [Velocitiy, { x: -10, y: 0 }]
+, [Velocity, { x: -10, y: 0 }]
 , [Enabled]
 )
 
 const movableQuery = new Query(world, allOf(Position, Velocity, Enabled))
 
 function movementSystem(deltaTime: number): void {
-  for (const entityId of movableQuery.findAllEntityId()) {
+  for (const entityId of movableQuery.findAllEntityIds()) {
     Position.arrays.x[entityId] += Velocity.arrays.x[entityId] * deltaTime
     Position.arrays.y[entityId] += Velocity.arrays.y[entityId] * deltaTime
   }
