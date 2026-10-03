@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest'
 import { Query } from '@src/query.js'
 import { not, and, or, xor, allOf, anyOf, oneOf } from '@src/pattern.js'
 import { toArray } from 'iterable-operator'

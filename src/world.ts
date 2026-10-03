@@ -1,6 +1,6 @@
 import { assert, NonEmptyArray, isUndefined, isSymbol } from '@blackglory/prelude'
 import { MapAllProps, Equals } from 'hotypes'
-import { Falsy } from 'justypes'
+import { EmptyObject, Falsy } from 'justypes'
 import { Emitter } from '@blackglory/structures'
 import {
   StructureOfArrays
@@ -19,13 +19,16 @@ export enum WorldEvent {
 type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
     // 使Exclude<T[Index]>成为变量U
-    [Exclude<T[Index], | Falsy>] extends [infer U]
+    [Exclude<T[Index], Falsy>] extends [infer U]
     ? (
         U extends Structure
         ? (
-            Equals<U, {}> extends true
+            Equals<U, EmptyObject> extends true
             ? Falsy | [component: Component<U>]
-            : Falsy | [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
+            : Falsy | [
+                        component: Component<U>
+                      , value?: MapTypesOfStructureToPrimitives<U>
+                      ]
           )
         : never
       )

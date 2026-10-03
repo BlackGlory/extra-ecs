@@ -51,7 +51,7 @@ movementSystem(deltaTime)
 
 ## API
 ```ts
-type Component<T extends Structure = any> =
+type Component<T extends Structure = Structure> =
 | StructureOfArrays<T>
 | StructureOfSparseMaps<T>
 | symbol
@@ -61,11 +61,11 @@ type Component<T extends Structure = any> =
 ```ts
 type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
   [Index in keyof T]:
-    [Exclude<T[Index], | Falsy>] extends [infer U]
+    [Exclude<T[Index], Falsy>] extends [infer U]
     ? (
         U extends Structure
         ? (
-            Equals<U, {}> extends true
+            Equals<U, EmptyObject> extends true
             ? Falsy | [component: Component<U>]
             : Falsy | [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
           )

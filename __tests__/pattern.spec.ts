@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest'
 import { Operator, allOf, and, anyOf, not, oneOf, or, xor } from '@src/pattern.js'
 
 describe('Patterns', () => {

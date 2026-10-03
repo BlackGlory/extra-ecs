@@ -1,3 +1,4 @@
+import { describe, test, expect } from 'vitest'
 import { toArray } from 'iterable-operator'
 import { World } from '@src/world.js'
 import { StructureOfArrays, StructureOfSparseMaps, int8 } from 'structure-of-arrays'
