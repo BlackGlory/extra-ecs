@@ -1,2 +1,2 @@
-export { NonRecyclableQuery as Query } from './query.js'
-export { NonRecyclableWorld as World } from './world.js'
+export { NonRecyclableQuery } from './query.js'
+export { NonRecyclableWorld } from './world.js'
