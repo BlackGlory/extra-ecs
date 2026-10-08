@@ -7,7 +7,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Bug Fixes
 
-* **recyclab:** exports ([c8b585b](https://github.com/BlackGlory/extra-ecs/commit/c8b585b765635364d8582d953c468d6b5fbb994f))
+* **non-recyclab:** exports ([c8b585b](https://github.com/BlackGlory/extra-ecs/commit/c8b585b765635364d8582d953c468d6b5fbb994f))
 
 ## [0.7.0](https://github.com/BlackGlory/extra-ecs/compare/v0.6.1...v0.7.0) (2026-10-08)
 
