@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.7.0](https://github.com/BlackGlory/extra-ecs/compare/v0.6.1...v0.7.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* Everything has been rewritten, except for the pattern part.
+* Node.js v18 => Node.js v22
+
+### Features
+
+* rewrite ([f5b29d3](https://github.com/BlackGlory/extra-ecs/commit/f5b29d33a7e34b58276eb64d722993146906d5e3))
+
+
+* upgrade dev dependencies ([15fde2e](https://github.com/BlackGlory/extra-ecs/commit/15fde2e0e2fe5227b69e86c5704c51ab830b4481))
+
 ### [0.6.1](https://github.com/BlackGlory/extra-ecs/compare/v0.6.0...v0.6.1) (2025-11-03)
 
 ## [0.6.0](https://github.com/BlackGlory/extra-ecs/compare/v0.5.4...v0.6.0) (2024-09-04)
