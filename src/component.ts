@@ -1,6 +1,2 @@
-import { StructureOfArrays, StructureOfSparseMaps, Structure } from 'structure-of-arrays'
-
-export type Component<T extends Structure = Structure> =
-| StructureOfArrays<T>
-| StructureOfSparseMaps<T>
-| symbol
+// 组件只是一个枚举值.
+export type ComponentId = number

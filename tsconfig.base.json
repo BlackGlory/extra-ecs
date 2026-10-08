@@ -11,6 +11,8 @@
   , "types": ["*"]
   , "paths": {
       "@src/*": ["./src/*"]
+    , "@non-recyclable/*": ["./src/non-recyclable/*"]
+    , "@recyclable/*": ["./src/recyclable/*"]
     , "@test/*": ["./__tests__/*"]
     }
   }

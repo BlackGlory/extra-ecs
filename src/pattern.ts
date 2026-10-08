@@ -1,8 +1,9 @@
 import { isArray, NonEmptyArray } from '@blackglory/prelude'
-import { Component } from './component.js'
+import { ComponentId } from './component.js'
+import { drop } from 'iterable-operator'
 
 export type Pattern =
-| Component
+| ComponentId
 | Expression
 
 type Expression =
@@ -81,4 +82,30 @@ export function isAnyOf(expression: Expression): expression is AnyOf {
 
 export function isOneOf(expression: Expression): expression is OneOf {
   return expression[0] === Operator.OneOf
+}
+
+export function* extractComponentIds(pattern: Pattern): IterableIterator<ComponentId> {
+  if (isExpression(pattern)) {
+    if (isNot(pattern)) {
+      for (const subPattern of drop(pattern, 1)) {
+        yield* extractComponentIds(subPattern)
+      }
+    } else if (isAllOf(pattern)) {
+      for (const subPattern of drop(pattern, 1)) {
+        yield* extractComponentIds(subPattern)
+      }
+    } else if (isAnyOf(pattern)) {
+      for (const subPattern of drop(pattern, 1)) {
+        yield* extractComponentIds(subPattern)
+      }
+    } else if (isOneOf(pattern)) {
+      for (const subPattern of drop(pattern, 1)) {
+        yield* extractComponentIds(subPattern)
+      }
+    } else {
+      throw new Error('Invalid pattern')
+    }
+  } else {
+    yield pattern
+  }
 }

@@ -8,110 +8,74 @@ yarn add extra-ecs
 
 ## Usage
 ```ts
-import { StructureOfArrays, float64 } from 'structure-of-arrays'
-import { World, Query, allOf } from 'extra-ecs'
+import { RecyclableWorld, RecyclableQuery, allOf } from 'extra-ecs'
 
-const Enabled = Symbol()
-const Position = new StructureOfArrays({
-  x: float64
-, y: float64
-})
-const Velocity = new StructureOfArrays({
-  x: float64
-, y: float64
-})
+enum ComponentId {
+  Enabled
+, Position
+, Velocity
+}
 
-const world = new World()
+const PositionAoS: Array<{
+  x: number
+  y: number
+}> = []
+const VelocityAoS: Array<{
+  x: number
+  y: number
+}> = []
+
+const world = new RecyclableWorld()
+
 const player = world.createEntityId()
-const enemy = world.createEntityId()
-world.addComponents(
-  player
-, [Position] // equivalent to [Position, { x: 0, y: 0 }]
-, [Velocity, { x: 10, y: 0 }]
-, [Enabled]
-)
-world.addComponents(
-  enemy
-, [Position, { x: 100, y: 0 }]
-, [Velocity, { x: -10, y: 0 }]
-, [Enabled]
-)
+world.addComponentId(player, [
+  ComponentId.Position
+, ComponentId.Velocity
+, ComponentId.Enabled
+])
+PositionAoS[player] = { x: 10, y: 0 }
+VelocityAoS[player] = { x: 0, y: 0 }
 
-const movableQuery = new Query(world, allOf(Position, Velocity, Enabled))
+const enemy = world.createEntityId()
+world.addComponentId(enemy, [
+  ComponentId.Position
+, ComponentId.Velocity
+, ComponentId.Enabled
+])
+PositionAoS[player] = { x: 100, y: 0 }
+VelocityAoS[enemy] = { x: -10, y: 0 }
+
+const movableQuery = new RecyclableQuery(world, allOf(
+  ComponentId.Position
+, ComponentId.Velocity
+, ComponentId.Enabled
+))
+movementSystem(deltaTime)
 
 function movementSystem(deltaTime: number): void {
   for (const entityId of movableQuery.findAllEntityIds()) {
-    Position.arrays.x[entityId] += Velocity.arrays.x[entityId] * deltaTime
-    Position.arrays.y[entityId] += Velocity.arrays.y[entityId] * deltaTime
+    PositionAoS[entityId].x += VelocityAoS[entityId].x * deltaTime
+    PositionAoS[entityId].y += VelocityAoS[entityId].y * deltaTime
   }
 }
-
-movementSystem(deltaTime)
 ```
+
+By simplifying components to `ComponentId`,
+this ECS library can be used with any component implementation,
+such as [structure-of-arrays].
+
+[structure-of-arrays]: https://github.com/BlackGlory/structure-of-arrays
 
 ## API
+### Component
 ```ts
-type Component<T extends Structure = Structure> =
-| StructureOfArrays<T>
-| StructureOfSparseMaps<T>
-| symbol
+type ComponentId = number
 ```
 
-### World
-```ts
-type MapComponentsToComponentValuePairs<T extends Array<Structure | Falsy>> = {
-  [Index in keyof T]:
-    [Exclude<T[Index], Falsy>] extends [infer U]
-    ? (
-        U extends Structure
-        ? (
-            Equals<U, EmptyObject> extends true
-            ? Falsy | [component: Component<U>]
-            : Falsy | [component: Component<U>, value?: MapTypesOfStructureToPrimitives<U>]
-          )
-        : never
-      )
-    : never
-}
-
-class World {
-  getAllEntityIds(): Iterable<number>
-  createEntityId(): number
-  hasEntityId(entityId: number): boolean
-  removeEntityId(entityId: number): void
-
-  componentsExist<T extends NonEmptyArray<Component>>(
-    entityId: number
-  , ...components: T
-  ): MapProps<T, boolean>
-  getComponents(entityId: number): Iterable<Component>
-  addComponents<T extends NonEmptyArray<Structure | Falsy>>(
-    entityId: number
-  , ...componentValuePairs: MapComponentsToComponentValuePairs<T>
-  ): void
-  removeComponents<T extends Structure>(
-    entityId: number
-  , ...components: NonEmptyArray<Component<T> | Falsy>
-  ): void
-}
-```
-
-### Query
-```ts
-class Query {
-  constructor(world: World, pattern: Pattern)
-
-  hasEntityId(entityId: number): boolean
-  findAllEntityIds(): Iterable<number>
-
-  destroy(): void
-}
-```
-
-#### Patterns
+### Pattern
 ```ts
 type Pattern =
-| Component
+| ComponentId
 | Expression
 
 type Expression =
@@ -121,45 +85,108 @@ type Expression =
 | OneOf
 ```
 
-##### and
+#### and
 ```ts
 function and(left: Pattern, right: Pattern): AllOf
 ```
 
-##### or
+#### or
 ```ts
 function or(left: Pattern, right: Pattern): AnyOf
 ```
 
-##### xor
+#### xor
 ```ts
 function xor(left: Pattern, right: Pattern): OneOf
 ```
 
-##### not
+#### not
 ```ts
 function not(...patterns: NonEmptyArray<Pattern>): Not
 ```
 
 `not(pattern1, pattern2) = not(anyOf(pattern1, pattern2))`
 
-##### allOf
+#### allOf
 ```ts
 function allOf(...patterns: NonEmptyArray<Pattern>): AllOf
 ```
 
 `allOf(pattern1, pattern2, pattern3) = and(and(pattern1, pattern2), pattern3)`
 
-##### anyOf
+#### anyOf
 ```ts
 function anyOf(...patterns: NonEmptyArray<Pattern>): AnyOf
 ```
 
 `anyOf(pattern1, pattern2, pattern3) = or(or(pattern1, pattern2), pattern3)`
 
-##### oneOf
+#### oneOf
 ```ts
 function oneOf(...patterns: NonEmptyArray<Pattern>): OneOf
 ```
 
 `oneOf(pattern1, pattern2, pattern3) = xor(xor(pattern1, pattern2), pattern3)`
+
+### Recyclable
+Removed entity ids will be recycled.
+
+#### RecyclableWorld
+```ts
+class RecyclableWorld {
+  findAllEntityIds(): IterableIterator<number>
+  hasEntityId(entityId: number): boolean
+  createEntityId(): number
+  removeEntityId(entityId: number): void
+
+  findComponentIds(entityId: number): IterableIterator<ComponentId>
+  hasComponentId(entityId: number, componentId: ComponentId): boolean
+  addComponentIds(entityId: number, componentIds: NonEmptyArray<ComponentId>): void
+  removeComponentIds(entityId: number, componentIds: NonEmptyArray<ComponentId>): void
+}
+```
+
+#### RecyclableQuery
+```ts
+class RecyclableQuery {
+  constructor(world: RecyclableWorld, pattern: Pattern)
+
+  hasEntityId(entityId: number): boolean
+
+  findAllEntityIds(): IterableIterator<number>
+  findAllEntityIdsAscending(): IterableIterator<number>
+
+  destroy(): void
+}
+```
+
+### Non-Recyclable
+Removed entity ids will not be recycled.
+
+#### NonRecyclableWorld
+```ts
+class NonRecyclableWorld {
+  findAllEntityIds(): IterableIterator<number>
+  hasEntityId(entityId: number): boolean
+  createEntityId(): number
+  removeEntityId(entityId: number): void
+
+  findComponentIds(entityId: number): IterableIterator<ComponentId>
+  hasComponentId(entityId: number, componentId: ComponentId): boolean
+  addComponentIds(entityId: number, componentIds: NonEmptyArray<ComponentId>): void
+  removeComponentIds(entityId: number, componentIds: NonEmptyArray<ComponentId>): void
+}
+```
+
+#### NonRecyclableQuery
+```ts
+class NonRecyclableQuery {
+  constructor(world: NonRecyclableWorld, pattern: Pattern)
+
+  hasEntityId(entityId: number): boolean
+
+  findAllEntityIds(): IterableIterator<number>
+
+  destroy(): void
+}
+```

@@ -1,67 +1,80 @@
-import { describe, test, expect } from 'vitest'
-import { Operator, allOf, and, anyOf, not, oneOf, or, xor } from '@src/pattern.js'
+import { test, expect } from 'vitest'
+import { Operator, allOf, and, anyOf, not, oneOf, or, xor, extractComponentIds } from '@src/pattern.js'
+import { toArray } from 'iterable-operator'
 
-describe('Patterns', () => {
-  test('not', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('not', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = not(component1, component2)
+  const result = not(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.Not, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.Not, componentId1, componentId2])
+})
 
-  test('allOf', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('allOf', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = allOf(component1, component2)
+  const result = allOf(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.AllOf, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.AllOf, componentId1, componentId2])
+})
 
-  test('anyOf', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('anyOf', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = anyOf(component1, component2)
+  const result = anyOf(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.AnyOf, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.AnyOf, componentId1, componentId2])
+})
 
-  test('oneOf', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('oneOf', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = oneOf(component1, component2)
+  const result = oneOf(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.OneOf, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.OneOf, componentId1, componentId2])
+})
 
-  test('and', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('and', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = and(component1, component2)
+  const result = and(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.AllOf, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.AllOf, componentId1, componentId2])
+})
 
-  test('or', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('or', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = or(component1, component2)
+  const result = or(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.AnyOf, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.AnyOf, componentId1, componentId2])
+})
 
-  test('xor', () => {
-    const component1 = Symbol()
-    const component2 = Symbol()
+test('xor', () => {
+  const componentId1 = 0
+  const componentId2 = 1
 
-    const result = xor(component1, component2)
+  const result = xor(componentId1, componentId2)
 
-    expect(result).toStrictEqual([Operator.OneOf, component1, component2])
-  })
+  expect(result).toStrictEqual([Operator.OneOf, componentId1, componentId2])
+})
+
+test('extractComponentIds', () => {
+  const componentId1 = 0
+  const componentId2 = 1
+  const componentId3 = 2
+  const pattern = anyOf(
+    componentId1
+  , allOf(componentId2, componentId3)
+  )
+
+  const result = toArray(extractComponentIds(pattern))
+
+  expect(result).toStrictEqual([componentId1, componentId2, componentId3])
 })
