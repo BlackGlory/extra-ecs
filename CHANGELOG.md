@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.8.0](https://github.com/BlackGlory/extra-ecs/compare/v0.7.1...v0.8.0) (2026-10-08)
+
+
+### ⚠ BREAKING CHANGES
+
+* ES2018 => ES2024
+
+### Features
+
+* improve types ([0872385](https://github.com/BlackGlory/extra-ecs/commit/08723858ae5a9c02c7447baa013dbca43d3e7313))
+
 ### [0.7.1](https://github.com/BlackGlory/extra-ecs/compare/v0.7.0...v0.7.1) (2026-10-08)
 
 
