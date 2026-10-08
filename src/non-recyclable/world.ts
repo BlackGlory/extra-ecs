@@ -1,6 +1,5 @@
 import { NonEmptyArray } from '@blackglory/prelude'
 import { Emitter, CleanSparseMap, CleanSparseSet } from '@blackglory/structures'
-import { ComponentId } from '@src/component.js'
 
 export enum NonRecylableWorldEvent {
   EntityRemoved
@@ -8,7 +7,7 @@ export enum NonRecylableWorldEvent {
 }
 
 // World本质上是一个内存数据库管理系统.
-export class NonRecyclableWorld extends Emitter<{
+export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
   [NonRecylableWorldEvent.EntityRemoved]: [entityId: number]
   [NonRecylableWorldEvent.EntityComponentsChanged]: [
     entityId: number
@@ -42,7 +41,7 @@ export class NonRecyclableWorld extends Emitter<{
   * findComponentIds(entityId: number): IterableIterator<ComponentId> {
     const componentIds = this.entityIdToComponentIdSet.get(entityId)
     if (componentIds) {
-      yield* componentIds.values()
+      yield* componentIds.values() as IterableIterator<ComponentId>
     }
   }
 

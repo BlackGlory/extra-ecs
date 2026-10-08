@@ -7,14 +7,14 @@ import { NonRecyclableWorld, NonRecylableWorldEvent } from './world.js'
 // Query为世界中的记录创建并维护索引.
 // 与数据库的索引一样, 这会降低"添加和删除实体/组件"时的速度.
 // Query的索引建立在对象内部, 没有任何形式的共享, 因此务必只创建必要的查询.
-export class NonRecyclableQuery {
+export class NonRecyclableQuery<ComponentId extends number> {
   private destructor: SyncDestructor = new SyncDestructor()
 
   private entityIdIndex: CleanSparseSet
 
   constructor(
-    private world: NonRecyclableWorld
-  , private pattern: Pattern
+    private world: NonRecyclableWorld<ComponentId>
+  , private pattern: Pattern<ComponentId>
   ) {
     const entityIdsSparseSet = new CleanSparseSet()
     for (const entityId of this.world.findAllEntityIds()) {
@@ -74,27 +74,27 @@ export class NonRecyclableQuery {
     this.entityIdIndex.add(entityId)
   }
 
-  private isMatch(entityId: number, pattern: Pattern = this.pattern): boolean {
+  private isMatch(entityId: number, pattern: Pattern<ComponentId> = this.pattern): boolean {
     if (isExpression(pattern)) {
       if (isNot(pattern)) {
         return !some(
           drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern)
+        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
         )
       } else if (isAllOf(pattern)) {
         return every(
           drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern)
+        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
         )
       } else if (isAnyOf(pattern)) {
         return some(
           drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern)
+        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
         )
       } else if (isOneOf(pattern)) {
         return count(filter(
           drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern)
+        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
         )) === 1
       } else {
         throw new Error('Invalid pattern')

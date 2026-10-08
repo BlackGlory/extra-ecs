@@ -1,7 +1,6 @@
 import { NonEmptyArray } from '@blackglory/prelude'
 import { BitSet, CleanSparseSet, Emitter } from '@blackglory/structures'
 import { first } from 'iterable-operator'
-import { ComponentId } from '@src/component.js'
 
 export enum RecyclableWorldEvent {
   EntityRemoved
@@ -9,7 +8,7 @@ export enum RecyclableWorldEvent {
 }
 
 // World本质上是一个内存数据库管理系统.
-export class RecyclableWorld extends Emitter<{
+export class RecyclableWorld<ComponentId extends number> extends Emitter<{
   [RecyclableWorldEvent.EntityRemoved]: [entityId: number]
   [RecyclableWorldEvent.EntityComponentsChanged]: [
     entityId: number
@@ -59,7 +58,7 @@ export class RecyclableWorld extends Emitter<{
   * findComponentIds(entityId: number): IterableIterator<ComponentId> {
     const componentIdSet = this.entityIdToComponentIdSet[entityId]
     if (componentIdSet) {
-      yield* componentIdSet.values()
+      yield* componentIdSet.values() as IterableIterator<ComponentId>
     }
   }
 

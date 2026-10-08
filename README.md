@@ -25,7 +25,7 @@ const VelocityAoS: Array<{
   y: number
 }> = []
 
-const world = new RecyclableWorld()
+const world = new RecyclableWorld<ComponentId>()
 
 const player = world.createEntityId()
 world.addComponentId(player, [
@@ -67,63 +67,75 @@ such as [structure-of-arrays].
 [structure-of-arrays]: https://github.com/BlackGlory/structure-of-arrays
 
 ## API
-### Component
-```ts
-type ComponentId = number
-```
-
 ### Pattern
 ```ts
-type Pattern =
+type Pattern<ComponentId extends number> =
 | ComponentId
-| Expression
+| Expression<ComponentId>
 
-type Expression =
-| Not
-| AllOf
-| AnyOf
-| OneOf
+type Expression<ComponentId extends number> =
+| Not<ComponentId>
+| AllOf<ComponentId>
+| AnyOf<ComponentId>
+| OneOf<ComponentId>
 ```
 
 #### and
 ```ts
-function and(left: Pattern, right: Pattern): AllOf
+function and<ComponentId extends number>(
+  left: Pattern<ComponentId>
+, right: Pattern<ComponentId>
+): AllOf<ComponentId>
 ```
 
 #### or
 ```ts
-function or(left: Pattern, right: Pattern): AnyOf
+function or<ComponentId extends number>(
+  left: Pattern<ComponentId>
+, right: Pattern<ComponentId>
+): AnyOf<ComponentId>
 ```
 
 #### xor
 ```ts
-function xor(left: Pattern, right: Pattern): OneOf
+function xor<ComponentId extends number>(
+  left: Pattern<ComponentId>
+, right: Pattern<ComponentId>
+): OneOf<ComponentId>
 ```
 
 #### not
 ```ts
-function not(...patterns: NonEmptyArray<Pattern>): Not
+function not<ComponentId extends number>(
+  ...patterns: NonEmptyArray<Pattern<ComponentId>>
+): Not<ComponentId>
 ```
 
 `not(pattern1, pattern2) = not(anyOf(pattern1, pattern2))`
 
 #### allOf
 ```ts
-function allOf(...patterns: NonEmptyArray<Pattern>): AllOf
+function allOf<ComponentId extends number>(
+  ...patterns: NonEmptyArray<Pattern<ComponentId>>
+): AllOf<ComponentId>
 ```
 
 `allOf(pattern1, pattern2, pattern3) = and(and(pattern1, pattern2), pattern3)`
 
 #### anyOf
 ```ts
-function anyOf(...patterns: NonEmptyArray<Pattern>): AnyOf
+function anyOf<ComponentId extends number>(
+  ...patterns: NonEmptyArray<Pattern<ComponentId>>
+): AnyOf<ComponentId>
 ```
 
 `anyOf(pattern1, pattern2, pattern3) = or(or(pattern1, pattern2), pattern3)`
 
 #### oneOf
 ```ts
-function oneOf(...patterns: NonEmptyArray<Pattern>): OneOf
+function oneOf<ComponentId extends number>(
+  ...patterns: NonEmptyArray<Pattern<ComponentId>>
+): OneOf<ComponentId>
 ```
 
 `oneOf(pattern1, pattern2, pattern3) = xor(xor(pattern1, pattern2), pattern3)`
@@ -133,7 +145,7 @@ Removed entity ids will be recycled.
 
 #### RecyclableWorld
 ```ts
-class RecyclableWorld {
+class RecyclableWorld<ComponentId extends number> {
   findAllEntityIds(): IterableIterator<number>
   hasEntityId(entityId: number): boolean
   createEntityId(): number
@@ -148,8 +160,11 @@ class RecyclableWorld {
 
 #### RecyclableQuery
 ```ts
-class RecyclableQuery {
-  constructor(world: RecyclableWorld, pattern: Pattern)
+class RecyclableQuery<ComponentId extends number> {
+  constructor(
+    world: RecyclableWorld<ComponentId>
+  , pattern: Pattern<ComponentId>
+  )
 
   hasEntityId(entityId: number): boolean
 
@@ -165,7 +180,7 @@ Removed entity ids will not be recycled.
 
 #### NonRecyclableWorld
 ```ts
-class NonRecyclableWorld {
+class NonRecyclableWorld<ComponentId extends number> {
   findAllEntityIds(): IterableIterator<number>
   hasEntityId(entityId: number): boolean
   createEntityId(): number
@@ -180,8 +195,11 @@ class NonRecyclableWorld {
 
 #### NonRecyclableQuery
 ```ts
-class NonRecyclableQuery {
-  constructor(world: NonRecyclableWorld, pattern: Pattern)
+class NonRecyclableQuery<ComponentId extends number> {
+  constructor(
+    world: NonRecyclableWorld<ComponentId>
+  , pattern: Pattern<ComponentId>
+  )
 
   hasEntityId(entityId: number): boolean
 
