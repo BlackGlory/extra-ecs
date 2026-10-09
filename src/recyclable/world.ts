@@ -1,6 +1,5 @@
 import { NonEmptyArray } from '@blackglory/prelude'
-import { CleanSparseSet, Emitter } from '@blackglory/structures'
-import { first } from 'iterable-operator'
+import { CleanSparseMap, CleanSparseSet, Emitter } from '@blackglory/structures'
 
 export enum RecyclableWorldEvent {
   EntityRemoved
@@ -15,55 +14,48 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
   , changedComponentIds: ComponentId[]
   ]
 }> {
-  private recycledEntityIds = new CleanSparseSet()
-  private entityIdToComponentIdSet: Array<CleanSparseSet | undefined> = []
+  private nextEntityId: number = 0
+  private recycledEntityIds: number[] = []
+  private entityIdToComponentIdSet: CleanSparseMap<CleanSparseSet> = new CleanSparseMap()
 
-  ;* findAllEntityIds(): IterableIterator<number> {
-    for (
-      let entityId = 0
-    ; entityId < this.entityIdToComponentIdSet.length
-    ; entityId++
-    ) {
-      if (this.entityIdToComponentIdSet[entityId] !== undefined) yield entityId
-    }
+  findAllEntityIds(): IterableIterator<number> {
+    return this.entityIdToComponentIdSet.keys()
   }
 
   hasEntityId(entityId: number): boolean {
-    return this.entityIdToComponentIdSet[entityId] !== undefined
+    return entityId < this.nextEntityId
+        && this.entityIdToComponentIdSet.has(entityId)
   }
 
   createEntityId(): number {
-    const entityId = first(this.recycledEntityIds.values())
+    const entityId = this.recycledEntityIds.pop()
     if (entityId !== undefined) {
-      this.recycledEntityIds.delete(entityId)
-      this.entityIdToComponentIdSet[entityId] = new CleanSparseSet()
+      this.entityIdToComponentIdSet.set(entityId, new CleanSparseSet())
       return entityId
     } else {
-      const entityId = this.entityIdToComponentIdSet.length
-      this.entityIdToComponentIdSet.push(new CleanSparseSet())
+      const entityId = this.nextEntityId++
+      this.entityIdToComponentIdSet.set(entityId, new CleanSparseSet())
       return entityId
     }
   }
 
   removeEntityId(entityId: number): void {
-    const componentIdSet = this.entityIdToComponentIdSet[entityId]
-    if (componentIdSet) {
-      this.entityIdToComponentIdSet[entityId] = undefined
-      this.recycledEntityIds.add(entityId)
+    if (this.entityIdToComponentIdSet.delete(entityId)) {
+      this.recycledEntityIds.push(entityId)
 
       this.emit(RecyclableWorldEvent.EntityRemoved, entityId)
     }
   }
 
   * findComponentIds(entityId: number): IterableIterator<ComponentId> {
-    const componentIdSet = this.entityIdToComponentIdSet[entityId]
-    if (componentIdSet) {
-      yield* componentIdSet.values() as IterableIterator<ComponentId>
+    const componentIds = this.entityIdToComponentIdSet.get(entityId)
+    if (componentIds) {
+      yield* componentIds.values() as IterableIterator<ComponentId>
     }
   }
 
   hasComponentId(entityId: number, componentId: ComponentId): boolean {
-    return this.entityIdToComponentIdSet[entityId]?.has(componentId)
+    return this.entityIdToComponentIdSet.get(entityId)?.has(componentId)
         ?? false
   }
 
@@ -71,7 +63,7 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
     entityId: number
   , componentIds: NonEmptyArray<ComponentId>
   ): void {
-    const componentIdSet = this.entityIdToComponentIdSet[entityId]
+    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
     if (componentIdSet) {
       const newAddedComponentIds: ComponentId[] = componentIds
         .filter(componentId => componentIdSet.add(componentId))
@@ -86,7 +78,7 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
     entityId: number
   , componentIds: NonEmptyArray<ComponentId>
   ): void {
-    const componentIdSet = this.entityIdToComponentIdSet[entityId]
+    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
     if (componentIdSet) {
       const newRemovedComponentIds: ComponentId[] = componentIds
         .filter(componentId => componentIdSet.delete(componentId))

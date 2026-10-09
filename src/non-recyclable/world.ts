@@ -1,15 +1,15 @@
 import { NonEmptyArray } from '@blackglory/prelude'
 import { Emitter, CleanSparseMap, CleanSparseSet } from '@blackglory/structures'
 
-export enum NonRecylableWorldEvent {
+export enum NonRecyclableWorldEvent {
   EntityRemoved
 , EntityComponentsChanged
 }
 
 // World本质上是一个内存数据库管理系统.
 export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
-  [NonRecylableWorldEvent.EntityRemoved]: [entityId: number]
-  [NonRecylableWorldEvent.EntityComponentsChanged]: [
+  [NonRecyclableWorldEvent.EntityRemoved]: [entityId: number]
+  [NonRecyclableWorldEvent.EntityComponentsChanged]: [
     entityId: number
   , changedComponentIds: ComponentId[]
   ]
@@ -27,14 +27,14 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
   }
 
   createEntityId(): number {
-    const id = this.nextEntityId++
-    this.entityIdToComponentIdSet.set(id, new CleanSparseSet())
-    return id
+    const entityId = this.nextEntityId++
+    this.entityIdToComponentIdSet.set(entityId, new CleanSparseSet())
+    return entityId
   }
 
   removeEntityId(entityId: number): void {
     if (this.entityIdToComponentIdSet.delete(entityId)) {
-      this.emit(NonRecylableWorldEvent.EntityRemoved, entityId)
+      this.emit(NonRecyclableWorldEvent.EntityRemoved, entityId)
     }
   }
 
@@ -57,7 +57,7 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
         .filter(componentId => componentIdSet.add(componentId))
 
       if (newAddedComponentIds.length) {
-        this.emit(NonRecylableWorldEvent.EntityComponentsChanged, entityId, newAddedComponentIds)
+        this.emit(NonRecyclableWorldEvent.EntityComponentsChanged, entityId, newAddedComponentIds)
       }
     }
   }
@@ -72,7 +72,7 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
         .filter(component => componentIdSet.delete(component))
 
       if (newRemovedComponentIds.length) {
-        this.emit(NonRecylableWorldEvent.EntityComponentsChanged, entityId, newRemovedComponentIds)
+        this.emit(NonRecyclableWorldEvent.EntityComponentsChanged, entityId, newRemovedComponentIds)
       }
     }
   }

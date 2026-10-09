@@ -1,7 +1,7 @@
-import { some, filter, every, drop, count } from 'iterable-operator'
-import { SyncDestructor } from '@blackglory/prelude'
+import { isNumber, SyncDestructor } from '@blackglory/prelude'
 import { BitSet, CleanSparseSet } from '@blackglory/structures'
-import { Pattern, isExpression, isAllOf, isAnyOf, isNot, isOneOf, extractComponentIds } from '@src/pattern.js'
+import { assertNever } from 'assert-never'
+import { Pattern, extractComponentIds, Operator } from '@src/pattern.js'
 import { RecyclableWorld, RecyclableWorldEvent } from './world.js'
 
 // Query为世界中的记录创建并维护索引.
@@ -26,12 +26,12 @@ export class RecyclableQuery<ComponentId extends number> {
 
   constructor(
     private world: RecyclableWorld<ComponentId>
-  , private pattern: Pattern<ComponentId>
+  , pattern: Pattern<ComponentId>
   ) {
     const entityIdsSparseSet = new CleanSparseSet()
     const entityIdsBitSet = new BitSet()
-    for (const entityId of this.world.findAllEntityIds()) {
-      if (this.isMatch(entityId)) {
+    for (const entityId of world.findAllEntityIds()) {
+      if (this.isMatch(entityId, pattern)) {
         entityIdsSparseSet.add(entityId)
         entityIdsBitSet.add(entityId)
       }
@@ -39,7 +39,7 @@ export class RecyclableQuery<ComponentId extends number> {
     this.entityIdIndex = entityIdsSparseSet
     this.entityIdAscendingIndex = entityIdsBitSet
 
-    this.destructor.defer(this.world.on(RecyclableWorldEvent.EntityRemoved, entityId => {
+    this.destructor.defer(world.on(RecyclableWorldEvent.EntityRemoved, entityId => {
       this.removeEntityId(entityId)
     }))
 
@@ -48,7 +48,7 @@ export class RecyclableQuery<ComponentId extends number> {
       relatedComponentIds.add(componentId)
     }
 
-    this.destructor.defer(this.world.on(RecyclableWorldEvent.EntityComponentsChanged, (
+    this.destructor.defer(world.on(RecyclableWorldEvent.EntityComponentsChanged, (
       entityId
     , changedComponentIds
     ) => {
@@ -57,11 +57,11 @@ export class RecyclableQuery<ComponentId extends number> {
 
       if (isRelatedComponentsChanged) {
         if (this.hasEntityId(entityId)) {
-          if (!this.isMatch(entityId)) {
+          if (!this.isMatch(entityId, pattern)) {
             this.removeEntityId(entityId)
           }
         } else {
-          if (this.isMatch(entityId)) {
+          if (this.isMatch(entityId, pattern)) {
             this.addEntityId(entityId)
           }
         }
@@ -109,34 +109,34 @@ export class RecyclableQuery<ComponentId extends number> {
     }
   }
 
-  private isMatch(entityId: number, pattern: Pattern<ComponentId> = this.pattern): boolean {
-    if (isExpression(pattern)) {
-      if (isNot(pattern)) {
-        return !some(
-          drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
-        )
-      } else if (isAllOf(pattern)) {
-        return every(
-          drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
-        )
-      } else if (isAnyOf(pattern)) {
-        return some(
-          drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
-        )
-      } else if (isOneOf(pattern)) {
-        return count(filter(
-          drop(pattern, 1)
-        , pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>)
-        )) === 1
-      } else {
-        throw new Error('Invalid pattern')
-      }
-    } else {
+  private isMatch(
+    entityId: number
+  , pattern: Pattern<ComponentId>
+  ): boolean {
+    if (isNumber(pattern)) {
       const componentId = pattern
       return this.world.hasComponentId(entityId, componentId)
+    } else {
+      switch (pattern.type) {
+        case Operator.Not: {
+          return !pattern.children
+            .some(pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>))
+        }
+        case Operator.AllOf: {
+          return pattern.children
+            .every(pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>))
+        }
+        case Operator.AnyOf: {
+          return pattern.children
+            .some(pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>))
+        }
+        case Operator.OneOf: {
+          return pattern.children
+            .filter(pattern => this.isMatch(entityId, pattern as Pattern<ComponentId>))
+            .length === 1
+        }
+        default: assertNever(pattern)
+      }
     }
   }
 }

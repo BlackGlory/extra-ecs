@@ -1,5 +1,4 @@
-import { isArray, NonEmptyArray } from '@blackglory/prelude'
-import { drop } from 'iterable-operator'
+import { isNumber, NonEmptyArray } from '@blackglory/prelude'
 
 export type Pattern<ComponentId extends number> =
 | ComponentId
@@ -18,10 +17,22 @@ export enum Operator {
 , OneOf
 }
 
-type Not<ComponentId extends number> = [Operator.Not, ...Pattern<ComponentId>[]]
-type AllOf<ComponentId extends number> = [Operator.AllOf, ...Pattern<ComponentId>[]]
-type AnyOf<ComponentId extends number> = [Operator.AnyOf, ...Pattern<ComponentId>[]]
-type OneOf<ComponentId extends number> = [Operator.OneOf, ...Pattern<ComponentId>[]]
+interface Not<ComponentId extends number> {
+  type: Operator.Not
+  children: Pattern<ComponentId>[]
+}
+interface AllOf<ComponentId extends number> {
+  type: Operator.AllOf
+  children: Pattern<ComponentId>[]
+}
+interface AnyOf<ComponentId extends number> {
+  type: Operator.AnyOf
+  children: Pattern<ComponentId>[]
+}
+interface OneOf<ComponentId extends number> {
+  type: Operator.OneOf
+  children: Pattern<ComponentId>[]
+}
 
 /**
  * `not(pattern1, pattern2) = not(anyOf(pattern1, pattern2))`
@@ -29,7 +40,10 @@ type OneOf<ComponentId extends number> = [Operator.OneOf, ...Pattern<ComponentId
 export function not<ComponentId extends number>(
   ...patterns: NonEmptyArray<Pattern<ComponentId>>
 ): Not<ComponentId> {
-  return [Operator.Not, ...patterns]
+  return {
+    type: Operator.Not
+  , children: patterns
+  }
 }
 
 /**
@@ -38,7 +52,10 @@ export function not<ComponentId extends number>(
 export function allOf<ComponentId extends number>(
   ...patterns: NonEmptyArray<Pattern<ComponentId>>
 ): AllOf<ComponentId> {
-  return [Operator.AllOf, ...patterns]
+  return {
+    type: Operator.AllOf
+  , children: patterns
+  }
 }
 
 /**
@@ -47,7 +64,10 @@ export function allOf<ComponentId extends number>(
 export function anyOf<ComponentId extends number>(
   ...patterns: NonEmptyArray<Pattern<ComponentId>>
 ): AnyOf<ComponentId> {
-  return [Operator.AnyOf, ...patterns]
+  return {
+    type: Operator.AnyOf
+  , children: patterns
+  }
 }
 
 /**
@@ -56,84 +76,50 @@ export function anyOf<ComponentId extends number>(
 export function oneOf<ComponentId extends number>(
   ...patterns: NonEmptyArray<Pattern<ComponentId>>
 ): OneOf<ComponentId> {
-  return [Operator.OneOf, ...patterns]
+  return {
+    type: Operator.OneOf
+  , children: patterns
+  }
 }
 
 export function and<ComponentId extends number>(
   left: Pattern<ComponentId>
 , right: Pattern<ComponentId>
 ): AllOf<ComponentId> {
-  return [Operator.AllOf, left, right]
+  return {
+    type: Operator.AllOf
+  , children: [left, right]
+  }
 }
 
 export function or<ComponentId extends number>(
   left: Pattern<ComponentId>
 , right: Pattern<ComponentId>
 ): AnyOf<ComponentId> {
-  return [Operator.AnyOf, left, right]
+  return {
+    type: Operator.AnyOf
+  , children: [left, right]
+  }
 }
 
 export function xor<ComponentId extends number>(
   left: Pattern<ComponentId>
 , right: Pattern<ComponentId>
 ): OneOf<ComponentId> {
-  return [Operator.OneOf, left, right]
-}
-
-export function isExpression<ComponentId extends number>(
-  pattern: Pattern<ComponentId>
-): pattern is Expression<ComponentId> {
-  return isArray(pattern)
-}
-
-export function isNot<ComponentId extends number>(
-  expression: Expression<ComponentId>
-): expression is Not<ComponentId> {
-  return expression[0] === Operator.Not
-}
-
-export function isAllOf<ComponentId extends number>(
-  expression: Expression<ComponentId>
-): expression is AllOf<ComponentId> {
-  return expression[0] === Operator.AllOf
-}
-
-export function isAnyOf<ComponentId extends number>(
-  expression: Expression<ComponentId>
-): expression is AnyOf<ComponentId> {
-  return expression[0] === Operator.AnyOf
-}
-
-export function isOneOf<ComponentId extends number>(
-  expression: Expression<ComponentId>
-): expression is OneOf<ComponentId> {
-  return expression[0] === Operator.OneOf
+  return {
+    type: Operator.OneOf
+  , children: [left, right]
+  }
 }
 
 export function* extractComponentIds<ComponentId extends number>(
   pattern: Pattern<ComponentId>
 ): IterableIterator<ComponentId> {
-  if (isExpression(pattern)) {
-    if (isNot(pattern)) {
-      for (const subPattern of drop(pattern, 1)) {
-        yield* extractComponentIds(subPattern as Pattern<ComponentId>)
-      }
-    } else if (isAllOf(pattern)) {
-      for (const subPattern of drop(pattern, 1)) {
-        yield* extractComponentIds(subPattern as Pattern<ComponentId>)
-      }
-    } else if (isAnyOf(pattern)) {
-      for (const subPattern of drop(pattern, 1)) {
-        yield* extractComponentIds(subPattern as Pattern<ComponentId>)
-      }
-    } else if (isOneOf(pattern)) {
-      for (const subPattern of drop(pattern, 1)) {
-        yield* extractComponentIds(subPattern as Pattern<ComponentId>)
-      }
-    } else {
-      throw new Error('Invalid pattern')
-    }
-  } else {
+  if (isNumber(pattern)) {
     yield pattern
+  } else {
+    for (const subPattern of pattern.children) {
+      yield* extractComponentIds(subPattern as Pattern<ComponentId>)
+    }
   }
 }

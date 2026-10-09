@@ -8,7 +8,10 @@ test('not', () => {
 
   const result = not(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.Not, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.Not
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('allOf', () => {
@@ -17,7 +20,10 @@ test('allOf', () => {
 
   const result = allOf(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.AllOf, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.AllOf
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('anyOf', () => {
@@ -26,7 +32,10 @@ test('anyOf', () => {
 
   const result = anyOf(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.AnyOf, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.AnyOf
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('oneOf', () => {
@@ -35,7 +44,10 @@ test('oneOf', () => {
 
   const result = oneOf(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.OneOf, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.OneOf
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('and', () => {
@@ -44,7 +56,10 @@ test('and', () => {
 
   const result = and(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.AllOf, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.AllOf
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('or', () => {
@@ -53,7 +68,10 @@ test('or', () => {
 
   const result = or(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.AnyOf, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.AnyOf
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('xor', () => {
@@ -62,7 +80,10 @@ test('xor', () => {
 
   const result = xor(componentId1, componentId2)
 
-  expect(result).toStrictEqual([Operator.OneOf, componentId1, componentId2])
+  expect(result).toStrictEqual({
+    type: Operator.OneOf
+  , children: [componentId1, componentId2]
+  })
 })
 
 test('extractComponentIds', () => {
