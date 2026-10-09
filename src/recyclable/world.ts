@@ -1,5 +1,5 @@
 import { NonEmptyArray } from '@blackglory/prelude'
-import { BitSet, CleanSparseSet, Emitter } from '@blackglory/structures'
+import { CleanSparseSet, Emitter } from '@blackglory/structures'
 import { first } from 'iterable-operator'
 
 export enum RecyclableWorldEvent {
@@ -15,7 +15,7 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
   , changedComponentIds: ComponentId[]
   ]
 }> {
-  private recycledEntityIds: BitSet = new BitSet()
+  private recycledEntityIds = new CleanSparseSet()
   private entityIdToComponentIdSet: Array<CleanSparseSet | undefined> = []
 
   ;* findAllEntityIds(): IterableIterator<number> {
@@ -33,7 +33,7 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
   }
 
   createEntityId(): number {
-    const entityId = first(this.recycledEntityIds)
+    const entityId = first(this.recycledEntityIds.values())
     if (entityId !== undefined) {
       this.recycledEntityIds.delete(entityId)
       this.entityIdToComponentIdSet[entityId] = new CleanSparseSet()
