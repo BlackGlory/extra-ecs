@@ -28,7 +28,7 @@ const VelocityAoS: Array<{
 const world = new RecyclableWorld<ComponentId>()
 
 const player = world.createEntityId()
-world.addComponentId(player, [
+world.addComponentIds(player, [
   ComponentId.Position
 , ComponentId.Velocity
 , ComponentId.Enabled
@@ -37,12 +37,12 @@ PositionAoS[player] = { x: 10, y: 0 }
 VelocityAoS[player] = { x: 0, y: 0 }
 
 const enemy = world.createEntityId()
-world.addComponentId(enemy, [
+world.addComponentIds(enemy, [
   ComponentId.Position
 , ComponentId.Velocity
 , ComponentId.Enabled
 ])
-PositionAoS[player] = { x: 100, y: 0 }
+PositionAoS[enemy] = { x: 100, y: 0 }
 VelocityAoS[enemy] = { x: -10, y: 0 }
 
 const movableQuery = new RecyclableQuery(world, allOf(
