@@ -11,36 +11,44 @@ export class RecyclableQuery<ComponentId extends number> {
   private destructor: SyncDestructor = new SyncDestructor()
 
   // 用来弥补BitSet在一些方面的性能不足.
-  private entityIdIndex: CleanSparseSet
+  private entityIdSet: CleanSparseSet
 
   // BitSet天然为增序.
   // 虽然遍历BitSet的速度不算快, 但基准测试表明,
   // 只要entityId是从0开始自增, 直接遍历BitSet总是要比其他方法快得多.
-  private entityIdAscendingIndex: BitSet
+  private entityIdSetAscending: BitSet
 
   /**
    * 为弥补BitSet遍历性能不足而准备的缓存.
    */
-  private entityIdAscendingIndexCache: number[] = []
-  private isEntityIdAscendingCacheIndexStale: boolean = true
+  private entityIdSetAscendingCache: number[] = []
+  private isEntityIdSetAscendingCacheStale: boolean = true
+
+  // 用于将索引更新延后到查询的时候.
+  private pendingEntityIdSet: CleanSparseSet = new CleanSparseSet()
 
   constructor(
     private world: RecyclableWorld<ComponentId>
-  , pattern: Pattern<ComponentId>
+  , private pattern: Pattern<ComponentId>
   ) {
-    const entityIdsSparseSet = new CleanSparseSet()
-    const entityIdsBitSet = new BitSet()
+    const entityIdSparseSet = new CleanSparseSet()
+    const entityIdBitSet = new BitSet()
     for (const entityId of world.findAllEntityIds()) {
       if (this.isMatch(entityId, pattern)) {
-        entityIdsSparseSet.add(entityId)
-        entityIdsBitSet.add(entityId)
+        entityIdSparseSet.add(entityId)
+        entityIdBitSet.add(entityId)
       }
     }
-    this.entityIdIndex = entityIdsSparseSet
-    this.entityIdAscendingIndex = entityIdsBitSet
+    this.entityIdSet = entityIdSparseSet
+    this.entityIdSetAscending = entityIdBitSet
 
     this.destructor.defer(world.on(RecyclableWorldEvent.EntityRemoved, entityId => {
-      this.removeEntityId(entityId)
+      this.pendingEntityIdSet.delete(entityId)
+
+      if (this.entityIdSet.delete(entityId)) {
+        this.entityIdSetAscending.delete(entityId)
+        this.isEntityIdSetAscendingCacheStale = true
+      }
     }))
 
     const relatedComponentIds = new CleanSparseSet()
@@ -52,42 +60,42 @@ export class RecyclableQuery<ComponentId extends number> {
       entityId
     , changedComponentIds
     ) => {
-      const isRelatedComponentsChanged = changedComponentIds
-        .some(componentId => relatedComponentIds.has(componentId))
+      if (!this.pendingEntityIdSet.has(entityId)) {
+        const isRelatedComponentsChanged = changedComponentIds
+          .some(componentId => relatedComponentIds.has(componentId))
 
-      if (isRelatedComponentsChanged) {
-        if (this.hasEntityId(entityId)) {
-          if (!this.isMatch(entityId, pattern)) {
-            this.removeEntityId(entityId)
-          }
-        } else {
-          if (this.isMatch(entityId, pattern)) {
-            this.addEntityId(entityId)
-          }
+        if (isRelatedComponentsChanged) {
+          this.pendingEntityIdSet.add(entityId)
         }
       }
     }))
   }
 
   hasEntityId(entityId: number): boolean {
-    return this.entityIdIndex.has(entityId)
+    this.consumePendingEntityIdSet()
+
+    return this.entityIdSet.has(entityId)
   }
 
   findAllEntityIds(): IterableIterator<number> {
-    return this.entityIdIndex.values()
+    this.consumePendingEntityIdSet()
+
+    return this.entityIdSet.values()
   }
 
   findAllEntityIdsAscending(): IterableIterator<number> {
-    if (this.isEntityIdAscendingCacheIndexStale) {
+    this.consumePendingEntityIdSet()
+
+    if (this.isEntityIdSetAscendingCacheStale) {
       // 基准测试表明, "用`Arary.from()`生成数组, 然后再遍历数组"与"边迭代边缓存"的速度相当.
       // 前者的一大优点是缓存能立即完成更新, 不需要像后者那样等待迭代完成才能完成更新.
-      const entityIdAscendingIndexCache = Array.from(this.entityIdAscendingIndex)
-      this.entityIdAscendingIndexCache = entityIdAscendingIndexCache
-      this.isEntityIdAscendingCacheIndexStale = false
+      const entityIdAscendingIndexCache = Array.from(this.entityIdSetAscending)
+      this.entityIdSetAscendingCache = entityIdAscendingIndexCache
+      this.isEntityIdSetAscendingCacheStale = false
 
       return entityIdAscendingIndexCache.values()
     } else {
-      return this.entityIdAscendingIndexCache.values()
+      return this.entityIdSetAscendingCache.values()
     }
   }
 
@@ -95,17 +103,27 @@ export class RecyclableQuery<ComponentId extends number> {
     this.destructor.execute()
   }
 
-  private removeEntityId(entityId: number): void {
-    if (this.entityIdIndex.delete(entityId)) {
-      this.entityIdAscendingIndex.delete(entityId)
-      this.isEntityIdAscendingCacheIndexStale = true
-    }
-  }
+  private consumePendingEntityIdSet(): void {
+    if (this.pendingEntityIdSet.size) {
+      for (const entityId of this.pendingEntityIdSet.values()) {
+        if (this.entityIdSet.has(entityId)) {
+          if (!this.isMatch(entityId, this.pattern)) {
+            this.entityIdSet.delete(entityId)
 
-  private addEntityId(entityId: number): void {
-    if (this.entityIdIndex.add(entityId)) {
-      this.entityIdAscendingIndex.add(entityId)
-      this.isEntityIdAscendingCacheIndexStale = true
+            this.entityIdSetAscending.delete(entityId)
+            this.isEntityIdSetAscendingCacheStale = true
+          }
+        } else {
+          if (this.isMatch(entityId, this.pattern)) {
+            this.entityIdSet.add(entityId)
+
+            this.entityIdSetAscending.add(entityId)
+            this.isEntityIdSetAscendingCacheStale = true
+          }
+        }
+      }
+
+      this.pendingEntityIdSet.clear()
     }
   }
 

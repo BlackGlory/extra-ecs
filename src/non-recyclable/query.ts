@@ -10,22 +10,26 @@ import { NonRecyclableWorld, NonRecyclableWorldEvent } from './world.js'
 export class NonRecyclableQuery<ComponentId extends number> {
   private destructor: SyncDestructor = new SyncDestructor()
 
-  private entityIdIndex: CleanSparseSet
+  private entityIdSet: CleanSparseSet = new CleanSparseSet()
+
+  // 用于将索引更新延后到查询的时候.
+  private pendingEntityIdSet: CleanSparseSet = new CleanSparseSet()
 
   constructor(
     private world: NonRecyclableWorld<ComponentId>
-  , pattern: Pattern<ComponentId>
+  , private pattern: Pattern<ComponentId>
   ) {
-    const entityIdsSparseSet = new CleanSparseSet()
-    for (const entityId of this.world.findAllEntityIds()) {
+    const entityIdSet = new CleanSparseSet()
+    for (const entityId of world.findAllEntityIds()) {
       if (this.isMatch(entityId, pattern)) {
-        entityIdsSparseSet.add(entityId)
+        entityIdSet.add(entityId)
       }
     }
-    this.entityIdIndex = entityIdsSparseSet
+    this.entityIdSet = entityIdSet
 
     this.destructor.defer(this.world.on(NonRecyclableWorldEvent.EntityRemoved, entityId => {
-      this.removeEntityId(entityId)
+      this.pendingEntityIdSet.delete(entityId)
+      this.entityIdSet.delete(entityId)
     }))
 
     const relatedComponentIds = new CleanSparseSet()
@@ -37,41 +41,49 @@ export class NonRecyclableQuery<ComponentId extends number> {
       entityId
     , changedComponentIds
     ) => {
-      const isRelatedComponentsChanged = changedComponentIds
-        .some(componentId => relatedComponentIds.has(componentId))
+      if (!this.pendingEntityIdSet.has(entityId)) {
+        const isRelatedComponentsChanged = changedComponentIds
+          .some(componentId => relatedComponentIds.has(componentId))
 
-      if (isRelatedComponentsChanged) {
-        if (this.hasEntityId(entityId)) {
-          if (!this.isMatch(entityId, pattern)) {
-            this.removeEntityId(entityId)
-          }
-        } else {
-          if (this.isMatch(entityId, pattern)) {
-            this.addEntityId(entityId)
-          }
+        if (isRelatedComponentsChanged) {
+          this.pendingEntityIdSet.add(entityId)
         }
       }
     }))
   }
 
   hasEntityId(entityId: number): boolean {
-    return this.entityIdIndex.has(entityId)
+    this.consumePendingEntityIdSet()
+
+    return this.entityIdSet.has(entityId)
   }
 
   findAllEntityIds(): IterableIterator<number> {
-    return this.entityIdIndex.values()
+    this.consumePendingEntityIdSet()
+
+    return this.entityIdSet.values()
   }
 
   destroy(): void {
     this.destructor.execute()
   }
 
-  private removeEntityId(entityId: number): void {
-    this.entityIdIndex.delete(entityId)
-  }
+  private consumePendingEntityIdSet(): void {
+    if (this.pendingEntityIdSet.size) {
+      for (const entityId of this.pendingEntityIdSet.values()) {
+        if (this.entityIdSet.has(entityId)) {
+          if (!this.isMatch(entityId, this.pattern)) {
+            this.entityIdSet.delete(entityId)
+          }
+        } else {
+          if (this.isMatch(entityId, this.pattern)) {
+            this.entityIdSet.add(entityId)
+          }
+        }
+      }
 
-  private addEntityId(entityId: number): void {
-    this.entityIdIndex.add(entityId)
+      this.pendingEntityIdSet.clear()
+    }
   }
 
   private isMatch(
