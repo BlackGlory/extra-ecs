@@ -2,17 +2,16 @@ import { NonEmptyArray } from '@blackglory/prelude'
 import { Emitter, CleanSparseMap, CleanSparseSet } from '@blackglory/structures'
 
 export enum NonRecyclableWorldEvent {
-  EntityRemoved
-, EntityComponentsChanged
+  EntityAdded
+, EntityRemoved
+, EntityComponentIdsChanged
 }
 
 // World本质上是一个内存数据库管理系统.
 export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
+  [NonRecyclableWorldEvent.EntityAdded]: [entityId: number]
   [NonRecyclableWorldEvent.EntityRemoved]: [entityId: number]
-  [NonRecyclableWorldEvent.EntityComponentsChanged]: [
-    entityId: number
-  , changedComponentIds: ComponentId[]
-  ]
+  [NonRecyclableWorldEvent.EntityComponentIdsChanged]: [entityId: number]
 }> {
   private nextEntityId: number = 0
   private entityIds: CleanSparseSet = new CleanSparseSet()
@@ -29,6 +28,9 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
   createEntityId(): number {
     const entityId = this.nextEntityId++
     this.entityIds.add(entityId)
+
+    this.emit(NonRecyclableWorldEvent.EntityAdded, entityId)
+
     return entityId
   }
 
@@ -57,22 +59,21 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
 
   addComponentIds(entityId: number, componentIds: NonEmptyArray<ComponentId>): void {
     if (this.entityIds.has(entityId)) {
-      const newAddedComponentIds: ComponentId[] = componentIds
-        .filter(componentId => {
-          let entityIdSet = this.componentIdToEntityIdSet.get(componentId)
-          if (!entityIdSet) {
-            entityIdSet = new CleanSparseSet()
-            this.componentIdToEntityIdSet.set(componentId, entityIdSet)
-          }
+      let entityComponentsChanged = false
+      for (const componentId of componentIds) {
+        let entityIdSet = this.componentIdToEntityIdSet.get(componentId)
+        if (!entityIdSet) {
+          entityIdSet = new CleanSparseSet()
+          this.componentIdToEntityIdSet.set(componentId, entityIdSet)
+        }
 
-          return entityIdSet.add(entityId)
-        })
+        if (entityIdSet.add(entityId)) {
+          entityComponentsChanged = true
+        }
+      }
 
-      if (newAddedComponentIds.length) {
-        this.emit(
-          NonRecyclableWorldEvent.EntityComponentsChanged
-        , entityId, newAddedComponentIds
-        )
+      if (entityComponentsChanged) {
+        this.emit(NonRecyclableWorldEvent.EntityComponentIdsChanged, entityId)
       }
     }
   }
@@ -82,15 +83,15 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
   , componentIds: NonEmptyArray<ComponentId>
   ): void {
     if (this.entityIds.has(entityId)) {
-      const newRemovedComponentIds: ComponentId[] = componentIds
-        .filter(componentId => this.componentIdToEntityIdSet.get(componentId)
-                                                           ?.delete(entityId))
+      let entityComponentsChanged = false
+      for (const componentId of componentIds) {
+        if (this.componentIdToEntityIdSet.get(componentId)?.delete(entityId)) {
+          entityComponentsChanged = true
+        }
+      }
 
-      if (newRemovedComponentIds.length) {
-        this.emit(
-          NonRecyclableWorldEvent.EntityComponentsChanged
-        , entityId, newRemovedComponentIds
-        )
+      if (entityComponentsChanged) {
+        this.emit(NonRecyclableWorldEvent.EntityComponentIdsChanged, entityId)
       }
     }
   }

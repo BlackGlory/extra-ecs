@@ -130,6 +130,17 @@ describe('NonRecyclableQuery', () => {
         expect(result).toStrictEqual([])
       })
     })
+
+    test('edge: Not only pattern', () => {
+      const world = new NonRecyclableWorld()
+      const componentId = 0
+      const query = new NonRecyclableQuery(world, not(componentId))
+      const entityId = world.createEntityId()
+
+      const result = toArray(query.findAllEntityIds())
+
+      expect(result).toStrictEqual([entityId])
+    })
   })
 
   test('destroy', () => {

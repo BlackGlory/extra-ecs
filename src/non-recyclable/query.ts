@@ -1,7 +1,7 @@
 import { SyncDestructor } from '@blackglory/prelude'
 import { CleanSparseSet } from '@blackglory/structures'
 import { assertNever } from 'assert-never'
-import { Pattern, extractComponentIds, Operator } from '@src/pattern.js'
+import { Pattern, Operator } from '@src/pattern.js'
 import { NonRecyclableWorld, NonRecyclableWorldEvent } from './world.js'
 
 // Query为世界中的记录创建并维护索引.
@@ -27,29 +27,31 @@ export class NonRecyclableQuery<ComponentId extends number> {
     }
     this.entityIdSet = entityIdSet
 
-    this.destructor.defer(this.world.on(NonRecyclableWorldEvent.EntityRemoved, entityId => {
-      this.pendingEntityIdSet.delete(entityId)
-      this.entityIdSet.delete(entityId)
-    }))
-
-    const relatedComponentIds = new CleanSparseSet()
-    for (const componentId of extractComponentIds(pattern)) {
-      relatedComponentIds.add(componentId)
-    }
-
-    this.destructor.defer(this.world.on(NonRecyclableWorldEvent.EntityComponentsChanged, (
-      entityId
-    , changedComponentIds
-    ) => {
-      if (!this.pendingEntityIdSet.has(entityId)) {
-        const isRelatedComponentsChanged = changedComponentIds
-          .some(componentId => relatedComponentIds.has(componentId))
-
-        if (isRelatedComponentsChanged) {
+    this.destructor.defer(this.world.on(
+      NonRecyclableWorldEvent.EntityAdded
+    , entityId => {
+        if (!this.pendingEntityIdSet.has(entityId)) {
           this.pendingEntityIdSet.add(entityId)
         }
       }
-    }))
+    ))
+
+    this.destructor.defer(this.world.on(
+      NonRecyclableWorldEvent.EntityRemoved
+    , entityId => {
+        this.pendingEntityIdSet.delete(entityId)
+        this.entityIdSet.delete(entityId)
+      }
+    ))
+
+    this.destructor.defer(this.world.on(
+      NonRecyclableWorldEvent.EntityComponentIdsChanged
+    , entityId => {
+        if (!this.pendingEntityIdSet.has(entityId)) {
+          this.pendingEntityIdSet.add(entityId)
+        }
+      }
+    ))
   }
 
   hasEntityId(entityId: number): boolean {

@@ -1,7 +1,7 @@
 import { SyncDestructor } from '@blackglory/prelude'
 import { BitSet, CleanSparseSet } from '@blackglory/structures'
 import { assertNever } from 'assert-never'
-import { Pattern, extractComponentIds, Operator } from '@src/pattern.js'
+import { Pattern, Operator } from '@src/pattern.js'
 import { RecyclableWorld, RecyclableWorldEvent } from './world.js'
 
 // Query为世界中的记录创建并维护索引.
@@ -40,33 +40,35 @@ export class RecyclableQuery<ComponentId extends number> {
     this.entityIdSet = entityIdSparseSet
     this.entityIdSetAscending = entityIdBitSet
 
-    this.destructor.defer(world.on(RecyclableWorldEvent.EntityRemoved, entityId => {
-      this.pendingEntityIdSet.delete(entityId)
-
-      if (this.entityIdSet.delete(entityId)) {
-        this.entityIdSetAscending.delete(entityId)
-        this.isEntityIdSetAscendingCacheStale = true
-      }
-    }))
-
-    const relatedComponentIds = new CleanSparseSet()
-    for (const componentId of extractComponentIds(pattern)) {
-      relatedComponentIds.add(componentId)
-    }
-
-    this.destructor.defer(world.on(RecyclableWorldEvent.EntityComponentsChanged, (
-      entityId
-    , changedComponentIds
-    ) => {
-      if (!this.pendingEntityIdSet.has(entityId)) {
-        const isRelatedComponentsChanged = changedComponentIds
-          .some(componentId => relatedComponentIds.has(componentId))
-
-        if (isRelatedComponentsChanged) {
+    this.destructor.defer(this.world.on(
+      RecyclableWorldEvent.EntityAdded
+    , entityId => {
+        if (!this.pendingEntityIdSet.has(entityId)) {
           this.pendingEntityIdSet.add(entityId)
         }
       }
-    }))
+    ))
+
+    this.destructor.defer(world.on(
+      RecyclableWorldEvent.EntityRemoved
+    , entityId => {
+        this.pendingEntityIdSet.delete(entityId)
+
+        if (this.entityIdSet.delete(entityId)) {
+          this.entityIdSetAscending.delete(entityId)
+          this.isEntityIdSetAscendingCacheStale = true
+        }
+      }
+    ))
+
+    this.destructor.defer(world.on(
+      RecyclableWorldEvent.EntityComponentsChanged
+    , entityId => {
+        if (!this.pendingEntityIdSet.has(entityId)) {
+          this.pendingEntityIdSet.add(entityId)
+        }
+      }
+    ))
   }
 
   hasEntityId(entityId: number): boolean {
