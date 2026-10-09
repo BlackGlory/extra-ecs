@@ -60,7 +60,7 @@ export class NonRecyclableWorld<ComponentId extends number> extends Emitter<{
       const newAddedComponentIds: ComponentId[] = componentIds
         .filter(componentId => {
           let entityIdSet = this.componentIdToEntityIdSet.get(componentId)
-          if (entityIdSet === undefined) {
+          if (!entityIdSet) {
             entityIdSet = new CleanSparseSet()
             this.componentIdToEntityIdSet.set(componentId, entityIdSet)
           }

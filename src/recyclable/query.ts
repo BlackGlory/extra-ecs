@@ -18,9 +18,7 @@ export class RecyclableQuery<ComponentId extends number> {
   // 只要entityId是从0开始自增, 直接遍历BitSet总是要比其他方法快得多.
   private entityIdSetAscending: BitSet
 
-  /**
-   * 为弥补BitSet遍历性能不足而准备的缓存.
-   */
+  // 为弥补BitSet遍历性能不足而准备的缓存.
   private entityIdSetAscendingCache: number[] = []
   private isEntityIdSetAscendingCacheStale: boolean = true
 
