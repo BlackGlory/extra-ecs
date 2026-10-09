@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.8.4](https://github.com/BlackGlory/extra-ecs/compare/v0.8.3...v0.8.4) (2026-10-09)
+
+
+### Bug Fixes
+
+* **query:** the Not only pattern ([29cece3](https://github.com/BlackGlory/extra-ecs/commit/29cece3ba24060d7f05828e5904208286b431587))
+
 ### [0.8.3](https://github.com/BlackGlory/extra-ecs/compare/v0.8.2...v0.8.3) (2026-10-09)
 
 ### [0.8.2](https://github.com/BlackGlory/extra-ecs/compare/v0.8.1...v0.8.2) (2026-10-09)
