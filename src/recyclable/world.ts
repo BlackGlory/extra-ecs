@@ -15,47 +15,52 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
   ]
 }> {
   private nextEntityId: number = 0
+  private entityIds: CleanSparseSet = new CleanSparseSet()
+  private componentIdToEntityIdSet: CleanSparseMap<CleanSparseSet> = new CleanSparseMap()
   private recycledEntityIds: number[] = []
-  private entityIdToComponentIdSet: CleanSparseMap<CleanSparseSet> = new CleanSparseMap()
 
   findAllEntityIds(): IterableIterator<number> {
-    return this.entityIdToComponentIdSet.keys()
+    return this.entityIds.values()
   }
 
   hasEntityId(entityId: number): boolean {
-    return entityId < this.nextEntityId
-        && this.entityIdToComponentIdSet.has(entityId)
+    return this.entityIds.has(entityId)
   }
 
   createEntityId(): number {
     const entityId = this.recycledEntityIds.pop()
     if (entityId !== undefined) {
-      this.entityIdToComponentIdSet.set(entityId, new CleanSparseSet())
+      this.entityIds.add(entityId)
       return entityId
     } else {
       const entityId = this.nextEntityId++
-      this.entityIdToComponentIdSet.set(entityId, new CleanSparseSet())
+      this.entityIds.add(entityId)
       return entityId
     }
   }
 
   removeEntityId(entityId: number): void {
-    if (this.entityIdToComponentIdSet.delete(entityId)) {
+    if (this.entityIds.delete(entityId)) {
       this.recycledEntityIds.push(entityId)
+
+      for (const entityIdSet of this.componentIdToEntityIdSet.values()) {
+        entityIdSet.delete(entityId)
+      }
 
       this.emit(RecyclableWorldEvent.EntityRemoved, entityId)
     }
   }
 
   * findComponentIds(entityId: number): IterableIterator<ComponentId> {
-    const componentIds = this.entityIdToComponentIdSet.get(entityId)
-    if (componentIds) {
-      yield* componentIds.values() as IterableIterator<ComponentId>
+    for (const [componentId, entityIdSet] of this.componentIdToEntityIdSet.entries()) {
+      if (entityIdSet.has(entityId)) {
+        yield componentId as ComponentId
+      }
     }
   }
 
   hasComponentId(entityId: number, componentId: ComponentId): boolean {
-    return this.entityIdToComponentIdSet.get(entityId)?.has(componentId)
+    return this.componentIdToEntityIdSet.get(componentId)?.has(entityId)
         ?? false
   }
 
@@ -63,13 +68,23 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
     entityId: number
   , componentIds: NonEmptyArray<ComponentId>
   ): void {
-    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
-    if (componentIdSet) {
+    if (this.entityIds.has(entityId)) {
       const newAddedComponentIds: ComponentId[] = componentIds
-        .filter(componentId => componentIdSet.add(componentId))
+        .filter(componentId => {
+          let entityIdSet = this.componentIdToEntityIdSet.get(componentId)
+          if (entityIdSet === undefined) {
+            entityIdSet = new CleanSparseSet()
+            this.componentIdToEntityIdSet.set(componentId, entityIdSet)
+          }
+
+          return entityIdSet.add(entityId)
+        })
 
       if (newAddedComponentIds.length) {
-        this.emit(RecyclableWorldEvent.EntityComponentsChanged, entityId, newAddedComponentIds)
+        this.emit(
+          RecyclableWorldEvent.EntityComponentsChanged
+        , entityId, newAddedComponentIds
+        )
       }
     }
   }
@@ -78,13 +93,16 @@ export class RecyclableWorld<ComponentId extends number> extends Emitter<{
     entityId: number
   , componentIds: NonEmptyArray<ComponentId>
   ): void {
-    const componentIdSet = this.entityIdToComponentIdSet.get(entityId)
-    if (componentIdSet) {
+    if (this.entityIds.has(entityId)) {
       const newRemovedComponentIds: ComponentId[] = componentIds
-        .filter(componentId => componentIdSet.delete(componentId))
+        .filter(componentId => this.componentIdToEntityIdSet.get(componentId)
+                                                           ?.delete(entityId))
 
       if (newRemovedComponentIds.length) {
-        this.emit(RecyclableWorldEvent.EntityComponentsChanged, entityId, newRemovedComponentIds)
+        this.emit(
+          RecyclableWorldEvent.EntityComponentsChanged
+        , entityId, newRemovedComponentIds
+        )
       }
     }
   }

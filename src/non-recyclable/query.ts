@@ -1,4 +1,4 @@
-import { isNumber, SyncDestructor } from '@blackglory/prelude'
+import { SyncDestructor } from '@blackglory/prelude'
 import { CleanSparseSet } from '@blackglory/structures'
 import { assertNever } from 'assert-never'
 import { Pattern, extractComponentIds, Operator } from '@src/pattern.js'
@@ -78,7 +78,7 @@ export class NonRecyclableQuery<ComponentId extends number> {
     entityId: number
   , pattern: Pattern<ComponentId>
   ): boolean {
-    if (isNumber(pattern)) {
+    if (typeof pattern === 'number') {
       const componentId = pattern
       return this.world.hasComponentId(entityId, componentId)
     } else {
